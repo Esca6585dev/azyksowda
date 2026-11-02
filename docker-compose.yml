@@ -1,0 +1,72 @@
+name: azyksowda
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      APP_ENV: production
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET .env faýlynda bolmaly}
+      DB_DRIVER: sqlite
+      DATABASE_URL: /data/azyksowda.db
+      UPLOAD_DIR: /uploads
+      LOG_DIR: /logs
+      FRONTEND_URL: ${SITE_URL:-https://azyksowda.com.tm}
+      SEED: ${SEED:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@azyksowda.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      DELIVERY_FEE: "10"
+      FREE_DELIVERY_FROM: "200"
+    volumes:
+      - backend_data:/data
+      - backend_uploads:/uploads
+      - backend_logs:/logs
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${SITE_URL:-https://azyksowda.com.tm}
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL:-https://azyksowda.com.tm}
+    restart: unless-stopped
+    environment:
+      # server-side fetches go straight to the Go container
+      API_URL: http://backend:8080
+      NEXT_PUBLIC_API_URL: ${SITE_URL:-https://azyksowda.com.tm}
+      NEXT_PUBLIC_SITE_URL: ${SITE_URL:-https://azyksowda.com.tm}
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      API_UPSTREAM: backend:8080
+      WEB_UPSTREAM: frontend:3000
+    volumes:
+      - ./deploy/nginx/templates:/etc/nginx/templates:ro
+      - ./deploy/nginx/snippets/azyksowda-ssl.conf:/etc/nginx/snippets/azyksowda-ssl.conf:ro
+      - ./deploy/ssl/fullchain.crt:/etc/nginx/ssl/azyksowda.com.tm/fullchain.crt:ro
+      - ./deploy/ssl/ca_bundle.crt:/etc/nginx/ssl/azyksowda.com.tm/ca_bundle.crt:ro
+      - ./deploy/ssl/private.key:/etc/nginx/ssl/azyksowda.com.tm/private.key:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  backend_data:
+  backend_uploads:
+  backend_logs:
+  nginx_logs:

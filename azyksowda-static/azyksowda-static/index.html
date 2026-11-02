@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AzykSowda | Baş sahypa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo">Azyk<span>Sowda</span></a>
+
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav__link active">Baş sahypa</a>
+        <a href="#contact" class="nav__link">Biz bilen habarlaşyň</a>
+      </nav>
+
+      <div class="header__actions">
+        <select class="lang" aria-label="Dil">
+          <option>Türkmen</option>
+          <option>English</option>
+          <option>Русский</option>
+        </select>
+        <button class="cart-btn" id="cartOpen" aria-label="Sebet">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <a href="#" class="btn btn--outline">Içeri gir</a>
+        <button class="burger" id="burger" aria-label="Menýu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>AzykSowda</h1>
+      <p>Azyk harytlary — amatly bahadan, öýüňize çenli.</p>
+      <div class="search">
+        <input type="search" id="search" placeholder="Haryt gözle...">
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <div class="products" id="products"></div>
+    <p class="empty" id="empty" hidden>Haryt tapylmady.</p>
+  </main>
+
+  <footer class="footer" id="contact">
+    <div class="container footer__grid">
+      <div>
+        <a href="index.html" class="logo logo--light">Azyk<span>Sowda</span></a>
+      </div>
+      <div>
+        <h3>Biz bilen habarlaşyň</h3>
+        <ul>
+          <li>Türkmenistan, Aşgabat şäheri, Azady 12.</li>
+          <li><a href="mailto:azyk.harytlar@gmail.com">azyk.harytlar@gmail.com</a></li>
+          <li><a href="tel:+99312947635">+993 12 947635</a></li>
+          <li><a href="tel:+99312947550">+993 12 947550</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sahypalar</h3>
+        <ul>
+          <li><a href="index.html">Baş sahypa</a></li>
+          <li><a href="#contact">Biz bilen habarlaşyň</a></li>
+          <li><a href="#">Içeri gir</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      Awtorlyk hukugy © <span id="year"></span> AzykSowda. Ähli hukuklar goralgy.
+    </div>
+  </footer>
+
+  <!-- Sebet -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-label="Sebet">
+    <div class="drawer__head">
+      <h2>Sebet</h2>
+      <button class="drawer__close" id="cartClose" aria-label="Ýap">×</button>
+    </div>
+    <div class="drawer__body" id="cartItems"></div>
+    <div class="drawer__foot">
+      <div class="total">Jemi: <strong id="cartTotal">0 manat</strong></div>
+      <button class="btn btn--primary btn--block" id="checkout">Sargyt et</button>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

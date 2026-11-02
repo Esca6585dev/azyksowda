@@ -1,0 +1,24 @@
+# secrets
+.env
+deploy/ssl/*
+!deploy/ssl/.gitkeep
+
+# backend
+backend/data/
+backend/logs/
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/server.exe
+backend/server
+
+# frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# misc
+.DS_Store
+Thumbs.db

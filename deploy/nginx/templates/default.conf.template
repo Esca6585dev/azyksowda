@@ -1,0 +1,100 @@
+# AzykSowda — nginx reverse proxy (HTTPS)
+# Placeholders ${API_UPSTREAM} / ${WEB_UPSTREAM} are filled by envsubst
+# (docker image does it automatically; install-ssl.sh does it for bare metal).
+
+upstream azyk_api { server ${API_UPSTREAM}; keepalive 32; }
+upstream azyk_web { server ${WEB_UPSTREAM}; keepalive 32; }
+
+map $http_upgrade $connection_upgrade { default upgrade; '' close; }
+
+# ---- HTTP -> HTTPS ----
+server {
+    listen 80;
+    listen [::]:80;
+    server_name azyksowda.com.tm www.azyksowda.com.tm;
+
+    location /.well-known/acme-challenge/ { root /var/www/html; }
+    location / { return 301 https://azyksowda.com.tm$request_uri; }
+}
+
+# ---- www -> apex ----
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name www.azyksowda.com.tm;
+
+    ssl_certificate     /etc/nginx/ssl/azyksowda.com.tm/fullchain.crt;
+    ssl_certificate_key /etc/nginx/ssl/azyksowda.com.tm/private.key;
+    include /etc/nginx/snippets/azyksowda-ssl.conf;
+
+    return 301 https://azyksowda.com.tm$request_uri;
+}
+
+# ---- main site ----
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name azyksowda.com.tm;
+
+    ssl_certificate         /etc/nginx/ssl/azyksowda.com.tm/fullchain.crt;
+    ssl_certificate_key     /etc/nginx/ssl/azyksowda.com.tm/private.key;
+    ssl_trusted_certificate /etc/nginx/ssl/azyksowda.com.tm/ca_bundle.crt;
+    include /etc/nginx/snippets/azyksowda-ssl.conf;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options SAMEORIGIN always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+    client_max_body_size 12m;
+    access_log /var/log/nginx/azyksowda.access.log;
+    error_log  /var/log/nginx/azyksowda.error.log warn;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
+
+    # --- Go API ---
+    location /api/ {
+        proxy_pass http://azyk_api;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 60s;
+    }
+
+    # --- uploaded product images (served by Go) ---
+    location /uploads/ {
+        proxy_pass http://azyk_api;
+        proxy_set_header Host $host;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+
+    # --- Next.js static assets (immutable) ---
+    location /_next/static/ {
+        proxy_pass http://azyk_web;
+        proxy_set_header Host $host;
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # --- Next.js app ---
+    location / {
+        proxy_pass http://azyk_web;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 60s;
+    }
+}
