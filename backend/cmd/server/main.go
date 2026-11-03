@@ -38,6 +38,9 @@ func main() {
 		ReadTimeout:           30 * time.Second,
 		WriteTimeout:          30 * time.Second,
 		DisableStartupMessage: cfg.IsProduction(),
+		// Behind nginx every request comes from 127.0.0.1; read the real client IP
+		// from the proxy header so rate limits and activity logs are per client.
+		ProxyHeader: cfg.ProxyHeader,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 			var fe *fiber.Error
@@ -81,8 +84,9 @@ func main() {
 		_ = app.ShutdownWithTimeout(10 * time.Second)
 	}()
 
-	log.Printf("[APP] Azyksowda API listening on :%s (%s)", cfg.Port, cfg.AppEnv)
-	if err := app.Listen(":" + cfg.Port); err != nil {
+	addr := cfg.Host + ":" + cfg.Port
+	log.Printf("[APP] Azyksowda API listening on %s (%s)", addr, cfg.AppEnv)
+	if err := app.Listen(addr); err != nil {
 		log.Fatalf("[APP] server stopped: %v", err)
 	}
 }

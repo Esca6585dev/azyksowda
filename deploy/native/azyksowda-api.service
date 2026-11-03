@@ -1,0 +1,29 @@
+[Unit]
+Description=AzykSowda API (Go Fiber)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=azyksowda
+Group=azyksowda
+EnvironmentFile=/etc/azyksowda/api.env
+WorkingDirectory=/var/lib/azyksowda
+ExecStart=/opt/azyksowda-app/current/api/azyksowda-api
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+TimeoutStopSec=15
+
+# hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ReadWritePaths=/var/lib/azyksowda /var/log/azyksowda
+
+[Install]
+WantedBy=multi-user.target

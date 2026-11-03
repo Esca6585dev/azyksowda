@@ -1,0 +1,27 @@
+[Unit]
+Description=AzykSowda web (Next.js)
+After=network-online.target azyksowda-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=azyksowda
+Group=azyksowda
+EnvironmentFile=/etc/azyksowda/web.env
+WorkingDirectory=/opt/azyksowda-app/current/web
+ExecStart=/usr/local/bin/node /opt/azyksowda-app/current/web/server.js
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+TimeoutStopSec=15
+
+# hardening (Next.js writes its cache under .next/ inside the release)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ReadWritePaths=/opt/azyksowda-app
+
+[Install]
+WantedBy=multi-user.target

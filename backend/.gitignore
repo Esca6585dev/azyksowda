@@ -6,3 +6,5 @@
 /server.exe
 /server
 /tmp/
+/server.exe~
+*.exe~

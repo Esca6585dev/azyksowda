@@ -110,6 +110,18 @@ CONF_DIR="/etc/nginx/sites-available"; ENABLED="/etc/nginx/sites-enabled"
 if [[ ! -d "$CONF_DIR" ]]; then CONF_DIR="/etc/nginx/conf.d"; ENABLED=""; fi
 export API_UPSTREAM WEB_UPSTREAM
 envsubst '${API_UPSTREAM} ${WEB_UPSTREAM}' < "$HERE/nginx/templates/default.conf.template" > "$CONF_DIR/azyksowda.conf"
+
+# nginx < 1.25.1 (Ubuntu 22.04 = 1.18, 24.04 = 1.24) has no "http2 on;" directive
+NGX_VER=$(nginx -v 2>&1 | sed -n 's#.*nginx/\([0-9.]*\).*#\1#p')
+if [[ -n "$NGX_VER" && "$(printf '%s\n%s\n' "$NGX_VER" 1.25.1 | sort -V | head -n1)" == "$NGX_VER" && "$NGX_VER" != 1.25.1 ]]; then
+  sed -i -e '/^[[:space:]]*http2 on;/d' -e 's/listen \(\[::\]:\)\{0,1\}443 ssl;/listen \1443 ssl http2;/' "$CONF_DIR/azyksowda.conf"
+  yellow "   (nginx $NGX_VER: 'listen ... ssl http2' görnüşi ulanyldy)"
+fi
+# servers without IPv6 cannot bind [::]
+if [[ ! -f /proc/net/if_inet6 ]]; then
+  sed -i '/listen \[::\]:/d' "$CONF_DIR/azyksowda.conf"
+  yellow "   (IPv6 ýok: [::] listen setirleri aýryldy)"
+fi
 if [[ -n "$ENABLED" ]]; then
   ln -sf "$CONF_DIR/azyksowda.conf" "$ENABLED/azyksowda.conf"
   [[ -e "$ENABLED/default" ]] && rm -f "$ENABLED/default" && yellow "   (default saýt öçürildi)"
@@ -117,7 +129,7 @@ fi
 green "   ✓ Konfig: $CONF_DIR/azyksowda.conf  (API=$API_UPSTREAM, WEB=$WEB_UPSTREAM)"
 
 if nginx -t; then
-  systemctl reload nginx 2>/dev/null || nginx -s reload
+  systemctl reload-or-restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || nginx
   green "   ✓ nginx täzeden ýüklendi"
 else
   red "   nginx konfig ýalňyş — ýokardaky habary okaň"; exit 1

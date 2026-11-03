@@ -10,7 +10,9 @@ import (
 
 // Config holds all runtime configuration loaded from environment variables.
 type Config struct {
+	Host             string // bind address; "127.0.0.1" behind nginx, "" = all interfaces
 	Port             string
+	ProxyHeader      string // e.g. "X-Real-IP" when running behind a reverse proxy
 	AppEnv           string
 	JWTSecret        string
 	JWTExpireHours   int
@@ -30,7 +32,9 @@ func Load() *Config {
 	_ = godotenv.Load()
 
 	cfg := &Config{
+		Host:             getEnv("HOST", ""),
 		Port:             getEnv("PORT", "8080"),
+		ProxyHeader:      getEnv("PROXY_HEADER", ""),
 		AppEnv:           getEnv("APP_ENV", "development"),
 		JWTSecret:        getEnv("JWT_SECRET", "azyksowda-dev-secret-change-me"),
 		JWTExpireHours:   getEnvInt("JWT_EXPIRE_HOURS", 168),

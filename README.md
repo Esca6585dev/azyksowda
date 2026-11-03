@@ -8,7 +8,7 @@ hereket loglary, ak/gara tema.
 azyksowda/
 ├─ backend/        Go 1.27 + Fiber v2 + GORM (SQLite default, Postgres opsiýa)
 ├─ frontend/       Next.js 16 (App Router) + Tailwind v4 + zustand
-├─ deploy/         nginx + SSL (azyksowda.com.tm) + skriptler
+├─ deploy/         nginx + SSL + Docker-syz serwer gurnamasy (deploy/native)
 ├─ docker-compose.yml
 ├─ run-dev.ps1 / run-dev.sh   (ýerli işletmek)
 └─ azyksowda-static/          (köne statik görnüş — salgylanma)
@@ -125,33 +125,85 @@ sargytlar, ulanyjylar, loglar). Favicon/ikonlar: `src/app/icon.svg`, `favicon.ic
 üýtgedilýär we `localStorage`-da (`az-theme`) ýatda saklanýar. Reňkler `globals.css`-daky tokenlerde
 (`--color-card`, `--color-surface`, `--color-ink`, `--color-line` ...) we `.dark` blokunda kesgitlenen.
 
-## Production (azyksowda.com.tm)
+## Production (azyksowda.com.tm) — Docker-syz
 
-### Docker (maslahat berilýär)
+Serwerde Docker ulanylmaýar. Ähli zat ulgamyň asyl paketlerinden gurulýar:
+
+| Bölek | Nireden | Nirede işleýär |
+|-------|---------|----------------|
+| nginx, git, sqlite3, logrotate | `apt` (Ubuntu/Debian) | 80/443 |
+| Go | go.dev resmi arhiwi, sha256 barlagy bilen | diňe gurmak üçin |
+| Node.js 24 | nodejs.org resmi arhiwi, sha256 barlagy bilen | `azyksowda-web` |
+| Backend | Go binar `api/azyksowda-api` | systemd `azyksowda-api`, 127.0.0.1:8080 |
+| Frontend | Next.js standalone `web/server.js` | systemd `azyksowda-web`, 127.0.0.1:3000 |
+
+### Ilkinji gurnama
 
 ```bash
-# serwerde
-git clone <repo> /opt/azyksowda && cd /opt/azyksowda
-cp /path/to/azyksowda.com.tm.crt /path/to/ca_bundle.crt /path/to/private.key deploy/ssl/
-sudo ./deploy/deploy.sh
+# serwerde (root)
+git clone https://github.com/Esca6585dev/azyksowda.git /opt/azyksowda
+# kompýuteriňizden SSL faýllaryny göçüriň:
+#   scp deploy/ssl/{azyksowda.com.tm.crt,ca_bundle.crt,private.key} root@SERWER:/opt/azyksowda/deploy/ssl/
+cd /opt/azyksowda
+sudo bash deploy/native/install.sh
 ```
 
-`deploy.sh`: docker gurnaýar, `.env` (JWT_SECRET, admin parol) döredýär, `install-ssl.sh` bilen sertifikaty
-barlap `fullchain.crt` ýasaýar, `backend + frontend + nginx` konteýnerlerini işledýär (80/443).
+Skript ahyrynda admin e-poçtasyny we awtomatik döredilen paroly görkezýär (`/etc/azyksowda/api.env`).
 
-### Docker-syz (nginx + systemd)
+### Täzelemek we yza gaýtarmak
 
 ```bash
-sudo ./deploy/install-ssl.sh --nginx --api 127.0.0.1:8080 --web 127.0.0.1:3000
-cd backend  && go build -o /opt/azyksowda/server ./cmd/server   # APP_ENV=production, JWT_SECRET=...
-cd frontend && npm ci && npm run build && npm start              # NEXT_PUBLIC_API_URL=https://azyksowda.com.tm
+sudo bash /opt/azyksowda/deploy/native/update.sh     # git pull + täze reliz + barlag
+sudo bash /opt/azyksowda/deploy/native/rollback.sh   # öňki relize gaýt
+sudo bash /opt/azyksowda/deploy/native/rollback.sh --list
+```
+
+Her täzeleme `/opt/azyksowda-app/releases/<wagt>/` içine aýratyn gurulýar we `current` baglanyşygy bilen geçirilýär.
+Barlag şowsuz bolsa, skript öňki relize özi gaýdýar. Soňky 5 reliz saklanýar.
+
+### Faýllar
+
+| Ýol | Näme |
+|-----|------|
+| `/etc/azyksowda/api.env`, `web.env` | sazlamalar (JWT_SECRET, admin, portlar) |
+| `/var/lib/azyksowda/data/azyksowda.db` | SQLite baza |
+| `/var/lib/azyksowda/uploads/` | haryt suratlary |
+| `/var/log/azyksowda/` | `app.log`, `access.log` (logrotate 14 gün) |
+| `/var/backups/azyksowda/` | gündelik baza nusgasy, hepdelik suratlar (14 gün) |
+
+```bash
+systemctl status azyksowda-api azyksowda-web nginx
+journalctl -u azyksowda-api -f
+tail -f /var/log/azyksowda/access.log
+```
+
+### Internet çäkli bolsa
+
+```bash
+# mirrorlar bilen
+sudo GOPROXY=https://goproxy.io,direct NPM_REGISTRY=https://registry.npmmirror.com bash deploy/native/install.sh
+# öňünden ýüklenen resmi arhiwler bilen
+sudo GO_TARBALL=/root/go1.27.0.linux-amd64.tar.gz NODE_TARBALL=/root/node-v24-linux-x64.tar.xz bash deploy/native/install.sh
+```
+
+Ýa-da interneti bar Linux/WSL kompýuterde taýýar reliz guruň we serwere göçüriň (serwerde Go we npm gerek däl):
+
+```bash
+bash deploy/native/build-release.sh                       # dist/azyksowda-release-<commit>.tar.gz
+scp dist/azyksowda-release-*.tar.gz root@SERWER:/root/
+sudo bash deploy/native/install.sh --release /root/azyksowda-release-<commit>.tar.gz
+sudo bash deploy/native/update.sh  --release /root/azyksowda-release-<commit>.tar.gz   # soňky gezekler
 ```
 
 ### SSL
 
 `deploy/install-ssl.sh` sertifikaty (Sectigo DV, `azyksowda.com.tm` + `www`) barlaýar: açar gabat gelýärmi,
 zynjyr dogrumy, möhleti. Häzirki sertifikat **2026-12-10** çenli. Täzesi gelende 3 faýly `deploy/ssl/` içine
-goýuň we skripti täzeden işlediň (`docker compose restart nginx`).
+goýuň we `sudo bash deploy/install-ssl.sh --nginx` işlediň. nginx 1.18/1.24 (Ubuntu 22.04/24.04) we IPv6-syz
+serwerler üçin konfig awtomatik uýgunlaşdyrylýar.
 
 `deploy/ssl/` git-e girmeýär (`.gitignore`).
+
+`docker-compose.yml` we `Dockerfile`-lar islege görä galdyryldy, olar zerur däl.
+
 # azyksowda
