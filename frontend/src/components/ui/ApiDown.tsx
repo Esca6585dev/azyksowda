@@ -7,7 +7,7 @@ export default function ApiDown({ message }: { message?: string | null }) {
         <ServerCrash className="h-10 w-10 text-red-500" />
         <h2 className="mt-3 text-lg font-bold text-red-800">Serwer bilen baglanyşyk ýok</h2>
         <p className="mt-1 max-w-md text-sm text-red-700">{message || "Backend API işlemeýär. Go serwerini işlediň we sahypany täzeläň."}</p>
-        <code className="mt-4 rounded-lg bg-white px-3 py-1.5 text-xs text-red-800">cd backend &amp;&amp; go run ./cmd/server</code>
+        <code className="mt-4 rounded-lg bg-card px-3 py-1.5 text-xs text-red-800">cd backend &amp;&amp; go run ./cmd/server</code>
       </div>
     </div>
   );

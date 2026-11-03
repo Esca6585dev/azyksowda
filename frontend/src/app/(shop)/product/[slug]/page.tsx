@@ -64,7 +64,7 @@ export default async function ProductPage({ params }: { params: Params }) {
           <span className="truncate font-semibold text-ink">{p.name}</span>
         </nav>
 
-        <div className="grid gap-6 rounded-2xl bg-white p-4 shadow-card sm:p-6 md:grid-cols-2 lg:gap-10 lg:p-8">
+        <div className="grid gap-6 rounded-2xl bg-card p-4 shadow-card sm:p-6 md:grid-cols-2 lg:gap-10 lg:p-8">
           <div className="group relative">
             <ProductImage image={p.image} emoji={p.emoji} name={p.name} color={p.category?.color} className="aspect-square w-full rounded-2xl" emojiClassName="!text-[7rem] sm:!text-[9rem]" priority />
             <div className="absolute left-3 top-3 flex flex-col gap-1.5">

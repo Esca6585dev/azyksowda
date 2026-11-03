@@ -58,7 +58,7 @@ export default function ImageUpload({ value, onChange, emoji }: Props) {
           </div>
         )}
         {busy && (
-          <div className="absolute inset-0 grid place-items-center bg-white/70">
+          <div className="absolute inset-0 grid place-items-center bg-card/70">
             <Spinner className="h-6 w-6 text-brand-600" />
           </div>
         )}

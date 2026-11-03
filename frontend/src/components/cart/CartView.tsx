@@ -21,7 +21,7 @@ export default function CartView({ site }: { site: SiteConfig }) {
   const fee = subtotal >= site.free_delivery_from || subtotal === 0 ? 0 : site.delivery_fee;
   const remaining = Math.max(0, site.free_delivery_from - subtotal);
 
-  if (!hydrated) return <div className="h-64 animate-pulse rounded-2xl bg-white" />;
+  if (!hydrated) return <div className="h-64 animate-pulse rounded-2xl bg-card" />;
 
   if (items.length === 0) {
     return <EmptyState emoji="🧺" title="Sebediňiz boş" text="Katalogdan halan harytlaryňyzy saýlap, sebede goşuň." action={{ href: "/catalog", label: "Kataloga geç" }} />;
@@ -29,7 +29,7 @@ export default function CartView({ site }: { site: SiteConfig }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-      <div className="rounded-2xl bg-white shadow-card">
+      <div className="rounded-2xl bg-card shadow-card">
         <div className="flex items-center justify-between border-b border-line px-4 py-3 sm:px-5">
           <h2 className="font-bold">
             Harytlar <span className="text-muted">({count})</span>
@@ -82,7 +82,7 @@ export default function CartView({ site }: { site: SiteConfig }) {
       </div>
 
       <aside className="h-fit space-y-4 lg:sticky lg:top-32">
-        <div className="rounded-2xl bg-white p-5 shadow-card">
+        <div className="rounded-2xl bg-card p-5 shadow-card">
           <h2 className="font-bold">Sargyt jemi</h2>
           <dl className="mt-3 space-y-2 text-sm">
             <div className="flex justify-between">

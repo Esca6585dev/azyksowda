@@ -1,7 +1,8 @@
 # AzykSowda — onlaýn azyk dükany
 
 Go (Fiber) backend + Next.js 16 frontend. Türkmen dilinde, mobil görnüşe çenli taýýar e-commerce:
-katalog (14 kategoriýa, 240+ hakyky haryt), sebet, sargyt, ulanyjy hasaby, admin panel, hereket loglary.
+katalog (14 kategoriýa, 257 hakyky haryt, 229-y surat bilen), sebet, sargyt, ulanyjy hasaby, admin panel,
+hereket loglary, ak/gara tema.
 
 ```
 azyksowda/
@@ -40,6 +41,20 @@ cd frontend && npm install && npm run dev   # http://localhost:3000
 | Müşderi| test@azyksowda.com    | test123  |
 
 Maglumat bazasyny täzeden doldurmak üçin `backend/data/azyksowda.db` faýlyny pozup, serweri täzeden işlediň.
+
+### Seed harytlary
+
+`backend/internal/seed/data/` içinde (`go:embed` bilen binara girýär, internet gerek däl):
+
+* `products.json` — 257 haryt: Aşgabadyň onlaýn bazaryndaky (ynamdar.com) azyk bölümlerinden 224 haryt
+  hakyky ady, markasy, bahasy we köne bahasy (arzanladyş) bilen, üstesine häzirki azyksowda.com.tm saýtyndaky 38 haryt.
+* `images/` — 400×400 haryt suratlary (229 sany). Ilkinji işe girizilende `UPLOAD_DIR/seed/` içine göçürilýär.
+
+azyksowda.com.tm harytlarynyň 28-siniň suraty ýok, sebäbi saýtdaky `assets/product/...` faýllary serwerde ýok (404).
+Olar emoji plitkasy bilen görünýär. Admin paneliň **Harytlar** bölüminden surat ýükläp bilersiňiz.
+
+> Seed suratlary we bahalary demo/synag üçin. Production-da öz suratlaryňyzy ýa-da üpjün edijiden
+> rugsat alnan suratlary ulanyň.
 
 ## Backend (Go Fiber)
 
@@ -105,6 +120,10 @@ Sahypalar: `/` baş sahypa · `/catalog` (süzgüç, tertip, sahypalama) · `/pr
 sargytlar, ulanyjylar, loglar). Favicon/ikonlar: `src/app/icon.svg`, `favicon.ico`, `apple-icon.tsx`, OG surat, PWA manifest.
 
 `node scripts/make-favicon.mjs` — logodan favicon.ico we PNG ikonlary täzeden döredýär.
+
+**Ak/gara tema:** sazlamada ulgamyň temasyny (prefers-color-scheme) alýar, sözbaşydaky Aý/Gün düwmesi bilen
+üýtgedilýär we `localStorage`-da (`az-theme`) ýatda saklanýar. Reňkler `globals.css`-daky tokenlerde
+(`--color-card`, `--color-surface`, `--color-ink`, `--color-line` ...) we `.dark` blokunda kesgitlenen.
 
 ## Production (azyksowda.com.tm)
 

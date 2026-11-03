@@ -33,7 +33,7 @@ export default function AdminOrderPage() {
         <OrderDetail
           order={order}
           actions={
-            <div className="rounded-2xl bg-white p-5 shadow-card no-print">
+            <div className="rounded-2xl bg-card p-5 shadow-card no-print">
               <h3 className="font-bold">Statusy üýtgetmek</h3>
               <div className="mt-3">
                 <StatusSelect order={order} onChanged={reload} className="h-11 w-full text-sm" />

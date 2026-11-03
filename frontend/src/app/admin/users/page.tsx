@@ -40,7 +40,7 @@ export default function AdminUsersPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Ady, e-poçta, telefon..." className="h-10 w-full rounded-xl border border-line pl-9 pr-3 text-sm focus:border-brand-500 focus:outline-none" />
           </div>
-          <select value={role} onChange={(e) => { setRole(e.target.value); setPage(1); }} className="h-10 rounded-xl border border-line bg-white px-3 text-sm">
+          <select value={role} onChange={(e) => { setRole(e.target.value); setPage(1); }} className="h-10 rounded-xl border border-line bg-card px-3 text-sm">
             <option value="">Ähli rollar</option>
             <option value="admin">Administrator</option>
             <option value="user">Müşderi</option>
@@ -74,7 +74,7 @@ export default function AdminUsersPage() {
                   <tr key={u.id} className={cn("hover:bg-gray-50/70", !u.is_active && "opacity-60")}>
                     <td className={td}>
                       <div className="flex items-center gap-3">
-                        <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full font-bold text-white", u.role === "admin" ? "bg-ink" : "bg-brand-500")}>{u.name.charAt(0).toUpperCase()}</span>
+                        <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full font-bold text-white", u.role === "admin" ? "bg-slate-800 dark:bg-slate-600" : "bg-brand-500")}>{u.name.charAt(0).toUpperCase()}</span>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 font-semibold">
                             {u.name} {u.role === "admin" && <ShieldCheck className="h-4 w-4 text-brand-600" />}
@@ -87,7 +87,7 @@ export default function AdminUsersPage() {
                     <td className={cn(td, "text-muted")}>{u.phone || "—"}</td>
                     <td className={td}>{u.order_count ?? 0}</td>
                     <td className={td}>
-                      <select value={u.role} disabled={self} onChange={(e) => update(u, { role: e.target.value })} className="h-9 rounded-lg border border-line bg-white px-2 text-xs font-semibold disabled:opacity-50">
+                      <select value={u.role} disabled={self} onChange={(e) => update(u, { role: e.target.value })} className="h-9 rounded-lg border border-line bg-card px-2 text-xs font-semibold disabled:opacity-50">
                         <option value="user">Müşderi</option>
                         <option value="admin">Administrator</option>
                       </select>

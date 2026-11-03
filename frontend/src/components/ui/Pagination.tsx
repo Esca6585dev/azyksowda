@@ -28,7 +28,7 @@ export default function Pagination({ meta, hrefFor, className }: Props) {
   if (!meta || meta.total_pages <= 1) return null;
   const { page, total_pages } = meta;
   const items = pageList(page, total_pages);
-  const btn = "inline-flex h-10 min-w-10 items-center justify-center rounded-xl border border-line bg-white px-3 text-sm font-medium transition hover:border-brand-400 hover:text-brand-700";
+  const btn = "inline-flex h-10 min-w-10 items-center justify-center rounded-xl border border-line bg-card px-3 text-sm font-medium transition hover:border-brand-400 hover:text-brand-700";
   return (
     <nav className={cn("flex flex-wrap items-center justify-center gap-1.5", className)} aria-label="Sahypalar">
       {page > 1 ? (

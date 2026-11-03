@@ -3,12 +3,23 @@ import { Suspense } from "react";
 import { Clock, ShieldCheck, Truck } from "lucide-react";
 import SearchBox from "@/components/layout/SearchBox";
 import { btnClass } from "@/components/ui/Button";
+import ProductImage from "@/components/product/ProductImage";
+import { money } from "@/lib/format";
+import type { Product } from "@/lib/types";
 
 interface Props {
   productCount: number;
   categoryCount: number;
   freeFrom: number;
+  /** a few real products for the decorative basket card */
+  showcase?: Product[];
 }
+
+const FALLBACK_SHOWCASE = [
+  { id: 1, name: "Alma gyzyl", weight: "1 kg", price: 15, emoji: "🍎", image: "" },
+  { id: 2, name: "Süýt 2.5%", weight: "1 L", price: 12, emoji: "🥛", image: "" },
+  { id: 3, name: "Tamdyr çörek", weight: "1 sany", price: 4, emoji: "🫓", image: "" },
+];
 
 const FLOATERS = [
   { emoji: "🍎", cls: "left-[6%] top-[14%] text-5xl", delay: "0s" },
@@ -18,9 +29,11 @@ const FLOATERS = [
   { emoji: "🍊", cls: "left-[44%] top-[6%] text-3xl", delay: "2.4s" },
 ];
 
-export default function Hero({ productCount, categoryCount, freeFrom }: Props) {
+export default function Hero({ productCount, categoryCount, freeFrom, showcase }: Props) {
+  const basket = showcase && showcase.length >= 3 ? showcase.slice(0, 3) : FALLBACK_SHOWCASE;
+  const basketTotal = basket.reduce((a, p) => a + p.price, 0);
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-500 to-brand-400 text-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#1e6630] via-[#2e9e44] to-[#5ab268] text-white dark:from-[#0b1f12] dark:via-[#12361f] dark:to-[#1b5129]">
       <div className="pointer-events-none absolute inset-0 hidden md:block" aria-hidden="true">
         {FLOATERS.map((f, i) => (
           <span key={i} className={`absolute select-none opacity-25 ${f.cls}`} style={{ filter: "blur(0.3px)" }}>
@@ -74,34 +87,30 @@ export default function Hero({ productCount, categoryCount, freeFrom }: Props) {
 
         {/* decorative basket card */}
         <div className="relative mx-auto hidden w-full max-w-sm lg:block" aria-hidden="true">
-          <div className="rounded-3xl bg-white/95 p-5 text-ink shadow-2xl">
+          <div className="rounded-3xl bg-card/95 p-5 text-ink shadow-2xl">
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold">Siziň sebediňiz</span>
               <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700">3 haryt</span>
             </div>
             <ul className="mt-4 space-y-3">
-              {[
-                { e: "🍎", n: "Alma gyzyl", w: "1 kg", p: "15" },
-                { e: "🥛", n: "Elin süýt 2.5%", w: "1 L", p: "12" },
-                { e: "🫓", n: "Tamdyr çörek", w: "1 sany", p: "4" },
-              ].map((i) => (
-                <li key={i.n} className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-2xl">{i.e}</span>
-                  <span className="flex-1">
-                    <span className="block text-sm font-semibold">{i.n}</span>
-                    <span className="text-xs text-muted">{i.w}</span>
+              {basket.map((i) => (
+                <li key={i.id} className="flex items-center gap-3">
+                  <ProductImage image={i.image} emoji={i.emoji} name={i.name} className="h-12 w-12 shrink-0 rounded-xl border border-line" emojiClassName="!text-2xl" pad="p-1" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{i.name}</span>
+                    <span className="text-xs text-muted">{i.weight}</span>
                   </span>
-                  <span className="text-sm font-bold text-brand-600">{i.p} m.</span>
+                  <span className="shrink-0 text-sm font-bold text-brand-600">{money(i.price)} m.</span>
                 </li>
               ))}
             </ul>
             <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
               <span className="text-sm text-muted">Jemi</span>
-              <span className="text-lg font-extrabold text-brand-600">31 manat</span>
+              <span className="text-lg font-extrabold text-brand-600">{money(basketTotal)} manat</span>
             </div>
             <div className="mt-3 flex h-11 items-center justify-center rounded-xl bg-brand-500 text-sm font-semibold text-white">Sargyt bermek</div>
           </div>
-          <div className="absolute -left-10 top-10 flex items-center gap-2 rounded-2xl bg-white p-3 text-ink shadow-xl">
+          <div className="absolute -left-8 -top-6 flex items-center gap-2 rounded-2xl bg-card p-3 text-ink shadow-xl">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-accent-100 text-accent-600">
               <Truck className="h-4.5 w-4.5" />
             </span>
@@ -111,7 +120,7 @@ export default function Hero({ productCount, categoryCount, freeFrom }: Props) {
               bermek
             </span>
           </div>
-          <div className="absolute -bottom-6 -right-6 flex items-center gap-2 rounded-2xl bg-white p-3 text-ink shadow-xl">
+          <div className="absolute -bottom-6 -right-6 flex items-center gap-2 rounded-2xl bg-card p-3 text-ink shadow-xl">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-50 text-brand-600">
               <ShieldCheck className="h-4.5 w-4.5" />
             </span>

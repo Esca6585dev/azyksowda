@@ -26,7 +26,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   if (!hydrated || !user) {
     return (
       <div className="wrap py-8">
-        <div className="h-72 animate-pulse rounded-2xl bg-white" />
+        <div className="h-72 animate-pulse rounded-2xl bg-card" />
       </div>
     );
   }
@@ -35,14 +35,14 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <div className="wrap py-6 sm:py-8">
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <aside className="space-y-4">
-          <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card">
+          <div className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card">
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand-500 text-lg font-bold text-white">{user.name.charAt(0).toUpperCase()}</span>
             <div className="min-w-0">
               <div className="truncate font-bold">{user.name}</div>
               <div className="truncate text-xs text-muted">{user.email}</div>
             </div>
           </div>
-          <nav className="flex gap-1 overflow-x-auto rounded-2xl bg-white p-2 shadow-card lg:flex-col" aria-label="Hasap menýusy">
+          <nav className="flex gap-1 overflow-x-auto rounded-2xl bg-card p-2 shadow-card lg:flex-col" aria-label="Hasap menýusy">
             {TABS.map((t) => {
               const active = t.exact ? pathname === t.href : pathname.startsWith(t.href);
               return (

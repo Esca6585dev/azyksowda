@@ -81,7 +81,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         {/* sidebar */}
         <aside className="hidden lg:block">
           <div className="sticky top-32 space-y-5">
-            <div className="rounded-card bg-white p-4 shadow-card">
+            <div className="rounded-card bg-card p-4 shadow-card">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-bold">
                 <Filter className="h-4 w-4 text-brand-600" /> Kategoriýalar
               </h3>
@@ -104,7 +104,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
               </ul>
             </div>
 
-            <div className="rounded-card bg-white p-4 shadow-card">
+            <div className="rounded-card bg-card p-4 shadow-card">
               <h3 className="mb-3 flex items-center gap-2 text-sm font-bold">
                 <SlidersHorizontal className="h-4 w-4 text-brand-600" /> Süzgüç
               </h3>
@@ -144,11 +144,11 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
         <div className="min-w-0">
           {/* mobile category chips */}
           <div className="scroll-x -mx-4 mb-4 flex gap-2 px-4 pb-1 lg:hidden">
-            <Link href={withParam({ category: undefined })} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium", !params.category ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-white")}>
+            <Link href={withParam({ category: undefined })} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium", !params.category ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-card")}>
               Hemmesi
             </Link>
             {categories.map((c) => (
-              <Link key={c.id} href={withParam({ category: c.slug })} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium", params.category === c.slug ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-white")}>
+              <Link key={c.id} href={withParam({ category: c.slug })} className={cn("shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium", params.category === c.slug ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-card")}>
                 {c.emoji} {c.name}
               </Link>
             ))}
@@ -160,10 +160,10 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
               <p className="text-sm text-muted">{result.meta?.total ?? 0} haryt tapyldy</p>
             </div>
             <div className="flex items-center gap-2">
-              <Link href={withParam({ discount: params.discount ? undefined : "1" })} className={cn("inline-flex h-10 items-center rounded-xl border px-3 text-sm font-medium lg:hidden", params.discount ? "border-red-500 bg-red-50 text-red-700" : "border-line bg-white")}>
+              <Link href={withParam({ discount: params.discount ? undefined : "1" })} className={cn("inline-flex h-10 items-center rounded-xl border px-3 text-sm font-medium lg:hidden", params.discount ? "border-red-500 bg-red-50 text-red-700" : "border-line bg-card")}>
                 🔥 Arzan
               </Link>
-              <Suspense fallback={<div className="h-10 w-40 rounded-xl bg-white" />}>
+              <Suspense fallback={<div className="h-10 w-40 rounded-xl bg-card" />}>
                 <SortSelect />
               </Suspense>
             </div>

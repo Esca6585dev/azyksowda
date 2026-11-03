@@ -44,7 +44,7 @@ export default function CartDrawer({ site }: { site: SiteConfig }) {
       />
       <aside
         className={cn(
-          "fixed right-0 top-0 z-[90] flex h-full w-full max-w-[440px] flex-col bg-white shadow-drawer transition-transform duration-300 ease-out",
+          "fixed right-0 top-0 z-[90] flex h-full w-full max-w-[440px] flex-col bg-card shadow-drawer transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "translate-x-full",
         )}
         aria-label="Sebet"
@@ -84,7 +84,7 @@ export default function CartDrawer({ site }: { site: SiteConfig }) {
                       <span>Eltip bermek mugt! 🎉</span>
                     )}
                   </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white">
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-card">
                     <div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${progress}%` }} />
                   </div>
                 </div>

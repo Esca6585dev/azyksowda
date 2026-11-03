@@ -17,7 +17,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 
 export function Card({ title, children, className, actions, padded = true }: { title?: string; children: ReactNode; className?: string; actions?: ReactNode; padded?: boolean }) {
   return (
-    <section className={cn("rounded-2xl bg-white shadow-card", className)}>
+    <section className={cn("rounded-2xl bg-card shadow-card", className)}>
       {(title || actions) && (
         <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-5">
           {title && <h2 className="font-bold">{title}</h2>}
@@ -38,7 +38,7 @@ export function StatCard({ label, value, hint, icon, tone = "green" }: { label: 
     violet: "bg-violet-50 text-violet-600",
   };
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-card">
+    <div className="flex items-center gap-4 rounded-2xl bg-card p-4 shadow-card">
       <span className={cn("grid h-12 w-12 shrink-0 place-items-center rounded-xl", tones[tone])}>{icon}</span>
       <div className="min-w-0">
         <div className="text-xs font-medium text-muted">{label}</div>
@@ -68,10 +68,10 @@ export function AdminPagination({ meta, onPage }: { meta: Meta | null; onPage: (
         Jemi {meta.total} · sahypa {meta.page}/{meta.total_pages}
       </span>
       <div className="flex gap-1.5">
-        <button disabled={meta.page <= 1} onClick={() => onPage(meta.page - 1)} className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-white disabled:opacity-40" aria-label="Öňki">
+        <button disabled={meta.page <= 1} onClick={() => onPage(meta.page - 1)} className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-card disabled:opacity-40" aria-label="Öňki">
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <button disabled={meta.page >= meta.total_pages} onClick={() => onPage(meta.page + 1)} className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-white disabled:opacity-40" aria-label="Indiki">
+        <button disabled={meta.page >= meta.total_pages} onClick={() => onPage(meta.page + 1)} className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-card disabled:opacity-40" aria-label="Indiki">
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
@@ -90,7 +90,7 @@ export function Toggle({ checked, onChange, label, disabled }: { checked: boolea
       onClick={() => onChange(!checked)}
       className={cn("relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50", checked ? "bg-brand-500" : "bg-gray-300")}
     >
-      <span className={cn("inline-block h-5 w-5 rounded-full bg-white shadow transition-transform", checked ? "translate-x-5.5" : "translate-x-0.5")} />
+      <span className={cn("inline-block h-5 w-5 rounded-full bg-card shadow transition-transform", checked ? "translate-x-5.5" : "translate-x-0.5")} />
     </button>
   );
 }

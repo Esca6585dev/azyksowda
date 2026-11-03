@@ -8,7 +8,7 @@ import ProductImage from "@/components/product/ProductImage";
 export default function OrderCard({ order, href }: { order: Order; href: string }) {
   const items = order.items ?? [];
   return (
-    <Link href={href} className="block rounded-2xl bg-white p-4 shadow-card transition hover:shadow-card-hover sm:p-5">
+    <Link href={href} className="block rounded-2xl bg-card p-4 shadow-card transition hover:shadow-card-hover sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <div className="font-bold">Sargyt {order.number}</div>
@@ -19,9 +19,9 @@ export default function OrderCard({ order, href }: { order: Order; href: string 
       <div className="mt-3 flex items-center gap-3">
         <div className="flex -space-x-2">
           {items.slice(0, 5).map((i) => (
-            <ProductImage key={i.id} image={i.image} emoji={i.emoji} name={i.name} className="h-10 w-10 rounded-lg ring-2 ring-white" emojiClassName="!text-xl" />
+            <ProductImage key={i.id} image={i.image} emoji={i.emoji} name={i.name} className="h-10 w-10 rounded-lg ring-2 ring-card" emojiClassName="!text-xl" />
           ))}
-          {items.length > 5 && <span className="grid h-10 w-10 place-items-center rounded-lg bg-gray-100 text-xs font-semibold ring-2 ring-white">+{items.length - 5}</span>}
+          {items.length > 5 && <span className="grid h-10 w-10 place-items-center rounded-lg bg-gray-100 text-xs font-semibold ring-2 ring-card">+{items.length - 5}</span>}
         </div>
         <div className="ml-auto flex items-center gap-3">
           <div className="text-right">

@@ -78,7 +78,7 @@ export default function AdminProductsPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input value={q} onChange={(e) => resetPage(setQ)(e.target.value)} placeholder="Ady, markasy boýunça gözle..." className="h-10 w-full rounded-xl border border-line pl-9 pr-3 text-sm focus:border-brand-500 focus:outline-none" />
           </div>
-          <select value={category} onChange={(e) => resetPage(setCategory)(e.target.value)} className="h-10 rounded-xl border border-line bg-white px-3 text-sm">
+          <select value={category} onChange={(e) => resetPage(setCategory)(e.target.value)} className="h-10 rounded-xl border border-line bg-card px-3 text-sm">
             <option value="">Ähli kategoriýalar</option>
             {categories?.map((c) => (
               <option key={c.id} value={c.id}>
@@ -86,19 +86,19 @@ export default function AdminProductsPage() {
               </option>
             ))}
           </select>
-          <select value={status} onChange={(e) => resetPage(setStatus)(e.target.value)} className="h-10 rounded-xl border border-line bg-white px-3 text-sm">
+          <select value={status} onChange={(e) => resetPage(setStatus)(e.target.value)} className="h-10 rounded-xl border border-line bg-card px-3 text-sm">
             <option value="">Ähli statuslar</option>
             <option value="active">Satuwda</option>
             <option value="inactive">Ýapyk</option>
           </select>
-          <select value={sort} onChange={(e) => resetPage(setSort)(e.target.value)} className="h-10 rounded-xl border border-line bg-white px-3 text-sm">
+          <select value={sort} onChange={(e) => resetPage(setSort)(e.target.value)} className="h-10 rounded-xl border border-line bg-card px-3 text-sm">
             <option value="newest">Täzeler</option>
             <option value="popular">Köp satylan</option>
             <option value="price_asc">Arzan → gymmat</option>
             <option value="price_desc">Gymmat → arzan</option>
             <option value="name">Ady</option>
           </select>
-          <button onClick={() => resetPage(setLowStock)(!lowStock)} className={cn("h-10 rounded-xl border px-3 text-sm font-medium", lowStock ? "border-accent-500 bg-accent-50 text-accent-700" : "border-line bg-white")}>
+          <button onClick={() => resetPage(setLowStock)(!lowStock)} className={cn("h-10 rounded-xl border px-3 text-sm font-medium", lowStock ? "border-accent-500 bg-accent-50 text-accent-700" : "border-line bg-card")}>
             Az galan (≤10)
           </button>
         </div>

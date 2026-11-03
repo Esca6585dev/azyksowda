@@ -47,7 +47,7 @@ export default function AdminLogsPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
             <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="E-poçta, habar, IP..." className="h-10 w-full rounded-xl border border-line pl-9 pr-3 text-sm focus:border-brand-500 focus:outline-none" />
           </div>
-          <select value={action} onChange={(e) => { setAction(e.target.value); setPage(1); }} className="h-10 max-w-[220px] rounded-xl border border-line bg-white px-3 text-sm">
+          <select value={action} onChange={(e) => { setAction(e.target.value); setPage(1); }} className="h-10 max-w-[220px] rounded-xl border border-line bg-card px-3 text-sm">
             <option value="">Ähli hereketler</option>
             <option value="auth.*">Giriş / hasap</option>
             <option value="order.*">Sargytlar</option>
@@ -62,7 +62,7 @@ export default function AdminLogsPage() {
               ))}
             </optgroup>
           </select>
-          <select value={level} onChange={(e) => { setLevel(e.target.value); setPage(1); }} className="h-10 rounded-xl border border-line bg-white px-3 text-sm">
+          <select value={level} onChange={(e) => { setLevel(e.target.value); setPage(1); }} className="h-10 rounded-xl border border-line bg-card px-3 text-sm">
             <option value="">Ähli derejeler</option>
             <option value="info">Info</option>
             <option value="warn">Duýduryş</option>
@@ -122,7 +122,7 @@ export default function AdminLogsPage() {
                   {open === l.id && (
                     <tr className="bg-gray-50">
                       <td colSpan={7} className="px-5 py-3">
-                        {l.details && <pre className="overflow-x-auto rounded-lg bg-ink p-3 text-xs text-green-200">{pretty(l.details)}</pre>}
+                        {l.details && <pre className="overflow-x-auto rounded-lg bg-[#111714] p-3 text-xs text-green-200">{pretty(l.details)}</pre>}
                         {l.user_agent && <div className="mt-2 text-xs text-muted">UA: {l.user_agent}</div>}
                       </td>
                     </tr>

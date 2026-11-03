@@ -23,7 +23,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero productCount={productCount} categoryCount={categories.length || 14} freeFrom={site.free_delivery_from} />
+      <Hero productCount={productCount} categoryCount={categories.length || 14} freeFrom={site.free_delivery_from} showcase={featured.items.filter((p) => p.image).slice(0, 3)} />
       <FeatureStrip />
 
       {apiDown ? (
@@ -61,7 +61,7 @@ export default async function HomePage() {
                 { icon: Smartphone, title: "Telefondan amatly sargyt", text: "Saýt mobil telefonda doly işleýär. Sebede goşuň, salgyňyzy ýazyň — 2 minutda sargyt taýýar." },
                 { icon: Headset, title: "Goldaw her gün", text: `${site.work_hours}. Soraglaryňyz üçin ${site.phone} belgä jaň ediň.` },
               ].map((f) => (
-                <div key={f.title} className="rounded-card bg-white p-6 shadow-card">
+                <div key={f.title} className="rounded-card bg-card p-6 shadow-card">
                   <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-600">
                     <f.icon className="h-6 w-6" />
                   </span>

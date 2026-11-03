@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 const fieldBase =
-  "w-full rounded-xl border border-line bg-white px-3.5 text-[15px] text-ink placeholder:text-gray-400 transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 disabled:bg-gray-50";
+  "w-full rounded-xl border border-line bg-card px-3.5 text-[15px] text-ink placeholder:text-gray-400 transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 disabled:bg-gray-50";
 
 interface BaseProps {
   label?: string;

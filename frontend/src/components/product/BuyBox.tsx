@@ -24,7 +24,7 @@ export default function BuyBox({ product }: { product: Product }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex h-12 items-center overflow-hidden rounded-xl border border-line bg-white">
+        <div className="inline-flex h-12 items-center overflow-hidden rounded-xl border border-line bg-card">
           <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-full w-11 place-items-center hover:bg-gray-100" aria-label="Azalt">
             <Minus className="h-4 w-4" />
           </button>

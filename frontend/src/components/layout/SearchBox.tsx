@@ -92,7 +92,7 @@ export default function SearchBox({ size = "md", className, autoFocus, placehold
           enterKeyHint="search"
           autoComplete="off"
           className={cn(
-            "w-full rounded-xl border border-line bg-white text-ink placeholder:text-gray-400 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 [&::-webkit-search-cancel-button]:hidden",
+            "w-full rounded-xl border border-line bg-card text-ink placeholder:text-gray-400 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 [&::-webkit-search-cancel-button]:hidden",
             big ? "h-13 pl-11 pr-28 text-base" : "h-10 pl-10 pr-20 text-sm",
           )}
           aria-label="Gözleg"
@@ -122,7 +122,7 @@ export default function SearchBox({ size = "md", className, autoFocus, placehold
       </form>
 
       {showList && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-line bg-white shadow-card-hover animate-fade-in">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-line bg-card shadow-card-hover animate-fade-in">
           {visibleItems.length === 0 ? (
             <div className="px-4 py-5 text-sm text-muted">{loading ? "Gözlenýär..." : "Hiç zat tapylmady"}</div>
           ) : (

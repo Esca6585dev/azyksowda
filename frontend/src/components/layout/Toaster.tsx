@@ -16,7 +16,7 @@ export default function Toaster() {
           onClick={() => dismiss(t.id)}
           className={cn(
             "pointer-events-auto flex max-w-sm items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg animate-slide-up",
-            t.type === "success" && "bg-ink",
+            t.type === "success" && "bg-slate-800 dark:bg-slate-700",
             t.type === "error" && "bg-red-600",
             t.type === "info" && "bg-brand-600",
           )}

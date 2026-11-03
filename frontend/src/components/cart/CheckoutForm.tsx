@@ -41,11 +41,11 @@ export default function CheckoutForm({ site }: { site: SiteConfig }) {
   const fee = subtotal >= site.free_delivery_from || subtotal === 0 ? 0 : site.delivery_fee;
   const total = Math.round((subtotal + fee) * 100) / 100;
 
-  if (!cartHydrated || !authHydrated) return <div className="h-64 animate-pulse rounded-2xl bg-white" />;
+  if (!cartHydrated || !authHydrated) return <div className="h-64 animate-pulse rounded-2xl bg-card" />;
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-md rounded-2xl bg-white p-8 text-center shadow-card">
+      <div className="mx-auto max-w-md rounded-2xl bg-card p-8 text-center shadow-card">
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand-50 text-brand-600">
           <LockKeyhole className="h-7 w-7" />
         </div>
@@ -96,7 +96,7 @@ export default function CheckoutForm({ site }: { site: SiteConfig }) {
   return (
     <form onSubmit={submit} className="grid gap-6 lg:grid-cols-[1fr_380px]">
       <div className="space-y-5">
-        <div className="rounded-2xl bg-white p-5 shadow-card sm:p-6">
+        <div className="rounded-2xl bg-card p-5 shadow-card sm:p-6">
           <h2 className="text-lg font-bold">1. Eltip bermek maglumatlary</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Input label="Adyňyz" required value={form.name} onChange={set("name")} error={errors.name} placeholder="Merdan Annaýew" autoComplete="name" />
@@ -110,7 +110,7 @@ export default function CheckoutForm({ site }: { site: SiteConfig }) {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-card sm:p-6">
+        <div className="rounded-2xl bg-card p-5 shadow-card sm:p-6">
           <h2 className="text-lg font-bold">2. Töleg usuly</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {(
@@ -135,7 +135,7 @@ export default function CheckoutForm({ site }: { site: SiteConfig }) {
       </div>
 
       <aside className="h-fit lg:sticky lg:top-32">
-        <div className="rounded-2xl bg-white p-5 shadow-card">
+        <div className="rounded-2xl bg-card p-5 shadow-card">
           <h2 className="font-bold">Siziň sargydyňyz</h2>
           <ul className="mt-3 max-h-72 divide-y divide-line overflow-y-auto">
             {items.map((i) => (

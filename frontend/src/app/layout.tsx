@@ -3,6 +3,7 @@ import "./globals.css";
 import StoreHydration from "@/components/layout/StoreHydration";
 import Toaster from "@/components/layout/Toaster";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     default: `${SITE_NAME} — Onlaýn azyk dükany`,
     template: `%s | ${SITE_NAME}`,
   },
-  description: `${SITE_TAGLINE}. Miweler, gök önümler, süýt, et, çörek we 200-den gowrak haryt. Aşgabat boýunça çalt eltip bermek.`,
+  description: `${SITE_TAGLINE}. Miweler, gök önümler, süýt, et, çörek we 250-den gowrak haryt. Aşgabat boýunça çalt eltip bermek.`,
   keywords: ["azyk", "onlaýn dükan", "Aşgabat", "eltip bermek", "azyk harytlary", "AzykSowda", "söwda"],
   applicationName: SITE_NAME,
   manifest: "/manifest.webmanifest",
@@ -37,7 +38,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tk" className="h-full antialiased">
+    // the theme script toggles the "dark" class before React hydrates
+    <html lang="tk" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <StoreHydration />
         {children}

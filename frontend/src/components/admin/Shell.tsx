@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ExternalLink, LayoutDashboard, LogOut, Menu, Package, ScrollText, ShoppingBag, Tags, Users, X } from "lucide-react";
 import { isAdmin, useAuth } from "@/store/auth";
 import Logo, { LogoMark } from "@/components/layout/Logo";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 import { btnClass } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +49,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   if (!isAdmin(user)) {
     return (
       <div className="grid min-h-screen place-items-center p-6">
-        <div className="max-w-md rounded-2xl bg-white p-8 text-center shadow-card">
+        <div className="max-w-md rounded-2xl bg-card p-8 text-center shadow-card">
           <div className="text-5xl">🔒</div>
           <h1 className="mt-4 text-xl font-bold">Rugsat ýok</h1>
           <p className="mt-1 text-sm text-muted">Bu bölüm diňe administratorlar üçin. Siz {user.email} hökmünde girdiňiz.</p>
@@ -125,7 +126,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       )}
 
       <div className="flex min-h-screen min-w-0 flex-col">
-        <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-line bg-white/95 px-4 backdrop-blur sm:px-6 lg:h-16">
+        <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-line bg-card/95 px-4 backdrop-blur sm:px-6 lg:h-16">
           <button onClick={() => setOpen(true)} className="grid h-10 w-10 place-items-center rounded-xl hover:bg-gray-100 lg:hidden" aria-label="Menýu">
             <Menu className="h-5.5 w-5.5" />
           </button>
@@ -133,6 +134,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             <Logo compact />
           </div>
           <div className="ml-auto flex items-center gap-2 text-sm">
+            <ThemeToggle />
             <span className="hidden text-muted sm:inline">Admin:</span>
             <span className="font-semibold">{user.name}</span>
           </div>

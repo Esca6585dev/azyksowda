@@ -19,11 +19,11 @@ export default function MyOrdersPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-extrabold tracking-tight">Sargytlarym</h1>
         <div className="scroll-x flex gap-1.5">
-          <button onClick={() => { setStatus(""); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === "" ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-white")}>
+          <button onClick={() => { setStatus(""); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === "" ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-card")}>
             Hemmesi
           </button>
           {ORDER_STATUS_LIST.map((s) => (
-            <button key={s} onClick={() => { setStatus(s); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === s ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-white")}>
+            <button key={s} onClick={() => { setStatus(s); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === s ? "border-brand-500 bg-brand-500 text-white" : "border-line bg-card")}>
               {ORDER_STATUS[s].label}
             </button>
           ))}
@@ -45,13 +45,13 @@ export default function MyOrdersPage() {
           </div>
           {meta && meta.total_pages > 1 && (
             <div className="flex items-center justify-center gap-2 pt-2">
-              <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="h-10 rounded-xl border border-line bg-white px-4 text-sm font-medium disabled:opacity-40">
+              <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="h-10 rounded-xl border border-line bg-card px-4 text-sm font-medium disabled:opacity-40">
                 Öňki
               </button>
               <span className="text-sm text-muted">
                 {meta.page} / {meta.total_pages}
               </span>
-              <button disabled={page >= meta.total_pages} onClick={() => setPage((p) => p + 1)} className="h-10 rounded-xl border border-line bg-white px-4 text-sm font-medium disabled:opacity-40">
+              <button disabled={page >= meta.total_pages} onClick={() => setPage((p) => p + 1)} className="h-10 rounded-xl border border-line bg-card px-4 text-sm font-medium disabled:opacity-40">
                 Indiki
               </button>
             </div>

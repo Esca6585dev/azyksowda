@@ -1,8 +1,7 @@
-/** "15" | "2.50" — price number without currency. */
+/** "15.00" | "2.50" — price with two decimals (tenge), without currency. */
 export function money(n: number | undefined | null): string {
   const v = Number(n ?? 0);
-  if (Number.isInteger(v)) return String(v);
-  return v.toFixed(2);
+  return (Math.round(v * 100) / 100).toFixed(2);
 }
 
 /** "15 manat" */

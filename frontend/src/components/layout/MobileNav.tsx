@@ -19,7 +19,7 @@ export default function MobileNav() {
   const active = "text-brand-600";
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[70] border-t border-line bg-white/95 backdrop-blur pb-safe md:hidden" aria-label="Mobil menýu">
+    <nav className="fixed inset-x-0 bottom-0 z-[70] border-t border-line bg-card/95 backdrop-blur pb-safe md:hidden" aria-label="Mobil menýu">
       <div className="flex items-stretch">
         <Link href="/" className={cn(item, pathname === "/" && active)}>
           <Home className="h-5.5 w-5.5" /> Baş sahypa

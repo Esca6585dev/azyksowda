@@ -56,7 +56,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      <div className="rounded-2xl bg-white p-6 shadow-card sm:p-8">
+      <div className="rounded-2xl bg-card p-6 shadow-card sm:p-8">
         <div className="flex flex-col items-center text-center">
           <LogoMark size={52} />
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight">{isLogin ? "Içeri giriň" : "Hasap açyň"}</h1>
@@ -112,10 +112,10 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
         <div className="mt-4 rounded-xl border border-dashed border-accent-300 bg-accent-50 p-4 text-xs text-accent-800">
           <div className="font-bold">Synag hasaplary (diňe dev režimde görünýär)</div>
           <div className="mt-1.5 grid gap-1 sm:grid-cols-2">
-            <button type="button" className="rounded-lg bg-white px-2 py-1.5 text-left hover:bg-accent-100" onClick={() => setForm((f) => ({ ...f, email: "admin@azyksowda.com", password: "admin123" }))}>
+            <button type="button" className="rounded-lg bg-card px-2 py-1.5 text-left hover:bg-accent-100" onClick={() => setForm((f) => ({ ...f, email: "admin@azyksowda.com", password: "admin123" }))}>
               <b>Admin:</b> admin@azyksowda.com / admin123
             </button>
-            <button type="button" className="rounded-lg bg-white px-2 py-1.5 text-left hover:bg-accent-100" onClick={() => setForm((f) => ({ ...f, email: "test@azyksowda.com", password: "test123" }))}>
+            <button type="button" className="rounded-lg bg-card px-2 py-1.5 text-left hover:bg-accent-100" onClick={() => setForm((f) => ({ ...f, email: "test@azyksowda.com", password: "test123" }))}>
               <b>Müşderi:</b> test@azyksowda.com / test123
             </button>
           </div>

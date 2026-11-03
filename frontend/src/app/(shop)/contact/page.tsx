@@ -21,7 +21,7 @@ export default async function ContactPage() {
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
-          <div key={c.title} className="flex flex-col rounded-2xl bg-white p-6 shadow-card">
+          <div key={c.title} className="flex flex-col rounded-2xl bg-card p-6 shadow-card">
             <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-600">
               <c.icon className="h-6 w-6" />
             </span>
@@ -41,7 +41,7 @@ export default async function ContactPage() {
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white p-6 shadow-card">
+        <div className="rounded-2xl bg-card p-6 shadow-card">
           <h2 className="text-lg font-bold">Eltip bermek şertleri</h2>
           <ul className="mt-3 space-y-2 text-sm text-gray-700">
             <li>• Aşgabat şäheri boýunça 1-2 sagadyň içinde eltip berýäris.</li>
@@ -53,7 +53,7 @@ export default async function ContactPage() {
         <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 to-brand-400 p-6 text-white shadow-card">
           <h2 className="text-lg font-bold">Hyzmatdaşlyk</h2>
           <p className="mt-2 text-sm text-white/90">Önüm öndüriji ýa-da üpjün ediji bolsaňyz, harytlaryňyzy AzykSowda-da ýerleşdirmek üçin bize ýazyň. Ýerli öndürijileri goldaýarys.</p>
-          <a href={`mailto:${site.email}?subject=Hyzmatdaslyk`} className={btnClass("ghost", "md", "mt-4 bg-white text-brand-700 hover:bg-brand-50 hover:text-brand-700")}>
+          <a href={`mailto:${site.email}?subject=Hyzmatdaslyk`} className={btnClass("ghost", "md", "mt-4 bg-card text-brand-700 hover:bg-brand-50 hover:text-brand-700")}>
             Teklip ibermek
           </a>
         </div>

@@ -1,6 +1,6 @@
-data/
-logs/
-uploads/
-server.exe
-server
+/data/
+/logs/
+/uploads/
+/server.exe
+/server
 .env

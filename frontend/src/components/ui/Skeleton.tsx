@@ -6,8 +6,8 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function ProductCardSkeleton() {
   return (
-    <div className="rounded-card bg-white p-3 shadow-card">
-      <Skeleton className="aspect-[4/3] w-full rounded-xl" />
+    <div className="rounded-card bg-card p-3 shadow-card">
+      <Skeleton className="aspect-square w-full rounded-xl" />
       <Skeleton className="mt-3 h-4 w-3/4" />
       <Skeleton className="mt-2 h-3 w-1/3" />
       <div className="mt-3 flex items-center justify-between">

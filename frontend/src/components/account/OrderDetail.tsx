@@ -17,7 +17,7 @@ export default function OrderDetail({ order, actions }: { order: Order; actions?
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
       <div className="space-y-5">
-        <div className="rounded-2xl bg-white p-5 shadow-card">
+        <div className="rounded-2xl bg-card p-5 shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-extrabold">Sargyt {order.number}</h2>
@@ -35,7 +35,7 @@ export default function OrderDetail({ order, actions }: { order: Order; actions?
                 return (
                   <li key={s} className="relative text-center">
                     {i > 0 && <span className={cn("absolute left-[-50%] right-[50%] top-3.5 h-0.5", i <= idx ? "bg-brand-500" : "bg-gray-200")} />}
-                    <span className={cn("relative mx-auto grid h-7 w-7 place-items-center rounded-full text-xs font-bold ring-4 ring-white", done ? "bg-brand-500 text-white" : "bg-gray-200 text-muted")}>
+                    <span className={cn("relative mx-auto grid h-7 w-7 place-items-center rounded-full text-xs font-bold ring-4 ring-card", done ? "bg-brand-500 text-white" : "bg-gray-200 text-muted")}>
                       {done ? <Check className="h-4 w-4" /> : i + 1}
                     </span>
                     <span className={cn("mt-1.5 block text-[11px] font-medium sm:text-xs", done ? "text-brand-700" : "text-muted")}>{ORDER_STATUS[s].label}</span>
@@ -46,7 +46,7 @@ export default function OrderDetail({ order, actions }: { order: Order; actions?
           )}
         </div>
 
-        <div className="rounded-2xl bg-white shadow-card">
+        <div className="rounded-2xl bg-card shadow-card">
           <div className="border-b border-line px-5 py-3 font-bold">Harytlar ({order.item_count})</div>
           <ul className="divide-y divide-line">
             {order.items?.map((i) => (
@@ -84,7 +84,7 @@ export default function OrderDetail({ order, actions }: { order: Order; actions?
       </div>
 
       <aside className="space-y-4">
-        <div className="rounded-2xl bg-white p-5 shadow-card">
+        <div className="rounded-2xl bg-card p-5 shadow-card">
           <h3 className="font-bold">Eltip bermek</h3>
           <ul className="mt-3 space-y-2.5 text-sm">
             <li className="flex gap-2.5">
@@ -111,7 +111,7 @@ export default function OrderDetail({ order, actions }: { order: Order; actions?
           </ul>
         </div>
         {actions}
-        <div className="rounded-2xl bg-white p-5 text-xs text-muted shadow-card">
+        <div className="rounded-2xl bg-card p-5 text-xs text-muted shadow-card">
           Statuslar: {ORDER_STATUS_LIST.map((s) => ORDER_STATUS[s].label).join(" → ")}
         </div>
       </aside>

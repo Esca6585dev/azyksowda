@@ -49,14 +49,14 @@ export default function ProfilePage() {
           { l: "Hasap açylan", v: formatDate(user.created_at) },
           { l: "Rol", v: user.role === "admin" ? "Administrator" : "Müşderi" },
         ].map((s) => (
-          <div key={s.l} className="rounded-2xl bg-white p-4 shadow-card">
+          <div key={s.l} className="rounded-2xl bg-card p-4 shadow-card">
             <div className="text-xs text-muted">{s.l}</div>
             <div className="mt-1 text-lg font-extrabold">{s.v}</div>
           </div>
         ))}
       </div>
 
-      <form onSubmit={submit} className="rounded-2xl bg-white p-5 shadow-card sm:p-6">
+      <form onSubmit={submit} className="rounded-2xl bg-card p-5 shadow-card sm:p-6">
         <h2 className="text-lg font-bold">Şahsy maglumatlar</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Input label="Adyňyz" required value={form.name} onChange={set("name")} error={errors.name} />

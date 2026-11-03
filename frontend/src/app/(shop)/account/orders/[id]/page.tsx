@@ -60,7 +60,7 @@ export default function MyOrderPage() {
           order={order}
           actions={
             order.status === "pending" ? (
-              <div className="rounded-2xl bg-white p-5 shadow-card">
+              <div className="rounded-2xl bg-card p-5 shadow-card">
                 <h3 className="font-bold">Sargydy ýatyrmak</h3>
                 <p className="mt-1 text-sm text-muted">Sargyt tassyklanmanka ýatyryp bilersiňiz.</p>
                 <Button variant="danger" className="mt-3 w-full" onClick={() => setConfirm(true)}>

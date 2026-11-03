@@ -72,7 +72,7 @@ export default function AddToCart({ product, size = "sm", className, fullWidth }
       )}
     >
       <ShoppingBasket className={size === "lg" ? "h-5 w-5" : "h-4 w-4"} />
-      <span>{size === "sm" ? "Sebede" : "Sebede goş"}</span>
+      <span>{size === "sm" && !fullWidth ? "Sebede" : "Sebede goş"}</span>
     </button>
   );
 }

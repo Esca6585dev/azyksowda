@@ -33,11 +33,11 @@ export default function AdminOrdersPage() {
       <Card padded={false}>
         <div className="flex flex-wrap items-center gap-2 border-b border-line p-3 sm:p-4">
           <div className="scroll-x flex gap-1.5">
-            <button onClick={() => { setStatus(""); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === "" ? "border-ink bg-ink text-white" : "border-line bg-white")}>
+            <button onClick={() => { setStatus(""); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === "" ? "border-slate-800 bg-slate-800 text-white dark:border-brand-500 dark:bg-brand-500" : "border-line bg-card")}>
               Hemmesi
             </button>
             {ORDER_STATUS_LIST.map((s) => (
-              <button key={s} onClick={() => { setStatus(s); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === s ? "border-ink bg-ink text-white" : "border-line bg-white")}>
+              <button key={s} onClick={() => { setStatus(s); setPage(1); }} className={cn("shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold", status === s ? "border-slate-800 bg-slate-800 text-white dark:border-brand-500 dark:bg-brand-500" : "border-line bg-card")}>
                 {ORDER_STATUS[s].label}
               </button>
             ))}

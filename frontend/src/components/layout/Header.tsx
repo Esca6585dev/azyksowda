@@ -6,6 +6,8 @@ import { Suspense, useEffect, useState } from "react";
 import { ChevronDown, LayoutDashboard, LogOut, Menu, Package, Percent, Phone, ShoppingBasket, Sparkles, User, X } from "lucide-react";
 import Logo from "./Logo";
 import SearchBox from "./SearchBox";
+import ThemeToggle from "./ThemeToggle";
+import { imgUrl } from "@/lib/api";
 import { useCart } from "@/store/cart";
 import { isAdmin, useAuth } from "@/store/auth";
 import { useUI } from "@/store/ui";
@@ -54,7 +56,7 @@ export default function Header({ categories, site }: Props) {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+    <header className="sticky top-0 z-40 border-b border-line bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
       {/* top row */}
       <div className="wrap flex h-16 items-center gap-3 sm:gap-5">
         <button
@@ -75,6 +77,7 @@ export default function Header({ categories, site }: Props) {
         </div>
 
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+          <ThemeToggle />
           <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="hidden items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50 xl:flex">
             <span className="grid h-8 w-8 place-items-center rounded-full bg-brand-50 text-brand-600">
               <Phone className="h-4 w-4" />
@@ -101,7 +104,7 @@ export default function Header({ categories, site }: Props) {
               {userOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setUserOpen(false)} />
-                  <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-line bg-white py-1.5 shadow-card-hover animate-fade-in" role="menu">
+                  <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-line bg-card py-1.5 shadow-card-hover animate-fade-in" role="menu">
                     <div className="border-b border-line px-4 py-2.5">
                       <div className="truncate text-sm font-semibold">{user.name}</div>
                       <div className="truncate text-xs text-muted">{user.email}</div>
@@ -161,12 +164,17 @@ export default function Header({ categories, site }: Props) {
               <Menu className="h-4 w-4" /> Kategoriýalar
               <ChevronDown className="h-4 w-4 opacity-80" />
             </button>
-            <div className="invisible absolute left-0 top-full z-50 w-[640px] translate-y-1 rounded-xl border border-line bg-white p-3 opacity-0 shadow-card-hover transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            <div className="invisible absolute left-0 top-full z-50 w-[640px] translate-y-1 rounded-xl border border-line bg-card p-3 opacity-0 shadow-card-hover transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
               <div className="grid grid-cols-2 gap-1">
                 {categories.map((c) => (
                   <Link key={c.id} href={`/catalog?category=${c.slug}`} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-brand-50">
-                    <span className="grid h-9 w-9 place-items-center rounded-lg text-xl" style={{ background: `${c.color}1f` }}>
-                      {c.emoji}
+                    <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg text-xl" style={{ background: `${c.color}1f` }}>
+                      {imgUrl(c.image) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={imgUrl(c.image)!} alt="" loading="lazy" className="photo-tile h-full w-full object-contain p-0.5" />
+                      ) : (
+                        c.emoji
+                      )}
                     </span>
                     <span className="flex-1 font-medium">{c.name}</span>
                     <span className="text-xs text-muted">{c.product_count}</span>
@@ -195,7 +203,7 @@ export default function Header({ categories, site }: Props) {
 
       {/* mobile menu */}
       {menuOpen && (
-        <div className="fixed inset-x-0 bottom-0 top-[116px] z-40 overflow-y-auto bg-white md:hidden animate-fade-in">
+        <div className="fixed inset-x-0 bottom-0 top-[116px] z-40 overflow-y-auto bg-card md:hidden animate-fade-in">
           <div className="wrap py-4">
             {hydrated && user ? (
               <div className="mb-4 flex items-center gap-3 rounded-xl bg-brand-50 p-3">
@@ -255,7 +263,9 @@ export default function Header({ categories, site }: Props) {
               ))}
             </div>
 
-            <div className="mt-6 rounded-xl bg-gray-50 p-4 text-sm text-muted">
+            <ThemeToggle withLabel className="mt-6" />
+
+            <div className="mt-3 rounded-xl bg-gray-50 p-4 text-sm text-muted">
               <div className="font-semibold text-ink">{site.phone}</div>
               <div>{site.work_hours}</div>
               <div className="mt-1">{site.address}</div>
