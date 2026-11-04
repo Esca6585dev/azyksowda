@@ -5,6 +5,7 @@
 #    bash deploy/push.sh              # gur -> serwere iber -> gurna ýa-da täzele -> barla
 #    bash deploy/push.sh --hook       # mundan beýläk `git push` (main) serwere hem ýerleşdirýär
 #    bash deploy/push.sh --unhook     # git push hook-y aýyr
+#    bash deploy/push.sh --no-build   # şu commit üçin dist/ içinde gurlan arhiwi ulan
 #    SSH_HOST=ubuntu@216.250.10.109 SSH_PORT=2222 bash deploy/push.sh
 #
 #  Reliz şu ýerde gurulýar (Go linux binary + Next.js standalone) we scp bilen
@@ -24,8 +25,9 @@ if [[ -n "${SSH_PORT:-}" ]]; then
   SCP_OPTS+=(-P "$SSH_PORT")
 fi
 ALLOW_DIRTY=0
+BUILD=1
 
-case "${1:-}" in
+for arg in "$@"; do case "$arg" in
   --hook)
     git -C "$SRC_DIR" config core.hooksPath .githooks
     c_green "✅ git push (main) indi serwere hem ýerleşdirýär. Bir gezek geçmek: NO_DEPLOY=1 git push"
@@ -35,10 +37,10 @@ case "${1:-}" in
     c_green "✅ git push hook-y aýryldy"
     exit 0 ;;
   --allow-dirty) ALLOW_DIRTY=1 ;;
-  -h | --help) sed -n '2,15p' "$0"; exit 0 ;;
-  "") ;;
-  *) die "näbelli parametr: $1" ;;
-esac
+  --no-build) BUILD=0 ;; # reuse the dist/ archive of the current commit
+  -h | --help) sed -n '2,16p' "$0"; exit 0 ;;
+  *) die "näbelli parametr: $arg" ;;
+esac; done
 
 rssh() { ssh "${SSH_OPTS[@]}" "$SSH_HOST" "$@"; }
 rscp() { scp "${SCP_OPTS[@]}" "$@"; }
@@ -76,9 +78,13 @@ if [[ $MODE == fresh ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-TARGET_ARCH=$ARCH bash "$NATIVE_DIR/build-release.sh"
 NAME="azyksowda-release-$(git -C "$SRC_DIR" rev-parse --short HEAD)"
 ARCHIVE="$SRC_DIR/dist/$NAME.tar.gz"
+if [[ $BUILD == 1 || ! -f "$ARCHIVE" ]]; then
+  TARGET_ARCH=$ARCH bash "$NATIVE_DIR/build-release.sh"
+else
+  c_green "   gurlan arhiw ulanylýar: dist/$NAME.tar.gz"
+fi
 [[ -f "$ARCHIVE" ]] || die "arhiw tapylmady: $ARCHIVE"
 rm -rf "${ARCHIVE%.tar.gz}"
 { ls -1t "$SRC_DIR"/dist/azyksowda-release-*.tar.gz 2>/dev/null || true; } | tail -n +4 | xargs -r rm -f

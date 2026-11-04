@@ -128,11 +128,31 @@ if [[ -n "$ENABLED" ]]; then
 fi
 green "   ✓ Konfig: $CONF_DIR/azyksowda.conf  (API=$API_UPSTREAM, WEB=$WEB_UPSTREAM)"
 
+# An older hand-written config for the same domain would clash with ours
+# (duplicate upstreams / server_name). Park it out of nginx's include globs
+# and put it back if the new setup does not pass `nginx -t`.
+parked=()
+STAMP=$(date +%Y%m%d%H%M%S)
+for f in /etc/nginx/conf.d/*.conf /etc/nginx/sites-enabled/*; do
+  [[ -e "$f" ]] || continue
+  [[ "$(readlink -f "$f")" == "$(readlink -f "$CONF_DIR/azyksowda.conf")" ]] && continue
+  grep -qE "server_name[^;]*[[:space:]]$DOMAIN([[:space:];]|$)" "$f" || continue
+  if [[ "$f" == /etc/nginx/sites-enabled/* ]]; then
+    parked+=("$f|/etc/nginx/sites-available/$(basename "$f").disabled-$STAMP")
+  else
+    parked+=("$f|$f.disabled-$STAMP")
+  fi
+  mv "$f" "${parked[-1]#*|}"
+  yellow "   (köne konfig öçürildi: $f -> ${parked[-1]#*|})"
+done
+
 if nginx -t; then
   systemctl reload-or-restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || nginx
   green "   ✓ nginx täzeden ýüklendi"
 else
-  red "   nginx konfig ýalňyş — ýokardaky habary okaň"; exit 1
+  for p in "${parked[@]}"; do mv "${p#*|}" "${p%%|*}"; done
+  [[ -n "$ENABLED" ]] && rm -f "$ENABLED/azyksowda.conf"
+  red "   nginx konfig ýalňyş — ýokardaky habary okaň (öňki konfig yzyna goýuldy)"; exit 1
 fi
 
 echo
