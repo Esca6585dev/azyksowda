@@ -155,8 +155,15 @@ build_release() {
     cd "$SRC_DIR/frontend"
     local reg=()
     [[ -n "${NPM_REGISTRY:-}" ]] && reg=(--registry "$NPM_REGISTRY") && echo "   npm registry: $NPM_REGISTRY"
-    npm ci --no-audit --no-fund "${reg[@]}"
-    rm -rf .next
+    # npm writes node_modules/.package-lock.json on install; newer than the
+    # lockfile means the tree is current (and a running `next dev` keeps its files)
+    if [[ "${NPM_CI:-auto}" == auto && node_modules/.package-lock.json -nt package-lock.json ]]; then
+      echo "   node_modules häzirki package-lock.json bilen gabat gelýär"
+    else
+      npm ci --no-audit --no-fund "${reg[@]}"
+    fi
+    # .next/dev belongs to a running `next dev`; only drop the previous output
+    rm -rf .next/standalone
     NEXT_PUBLIC_API_URL="$SITE_URL" NEXT_PUBLIC_SITE_URL="$SITE_URL" NEXT_TELEMETRY_DISABLED=1 npm run build
     [[ -f .next/standalone/server.js ]] || die "standalone çykyşy tapylmady (next.config: output: \"standalone\")"
     cp -a .next/standalone/. "$dest/web/"
@@ -164,10 +171,28 @@ build_release() {
     cp -a .next/static "$dest/web/.next/static"
     cp -a public "$dest/web/public"
   )
+  [[ "$(uname -s)" == Linux ]] || portable_web "$dest/web"
   c_green "   ✓ web/ ($(du -sh "$dest/web" | cut -f1))"
 
   (cd "$SRC_DIR" && git rev-parse --short HEAD 2>/dev/null || echo "local") > "$dest/VERSION"
   date -u +%Y-%m-%dT%H:%M:%SZ >> "$dest/VERSION"
+}
+
+# A standalone build made on Windows/macOS carries that OS's sharp binary and
+# its absolute build path in the embedded config; make it Linux-clean.
+portable_web() { # web dir
+  local web="$1"
+  rm -rf "$web"/node_modules/@img/sharp-win32-* "$web"/node_modules/@img/sharp-darwin-* \
+    "$web"/node_modules/@img/sharp-libvips-darwin-*
+  (cd "$SRC_DIR/frontend" && node -e '
+    const fs = require("fs"), path = require("path");
+    const web = process.argv[1];
+    const esc = JSON.stringify(process.cwd()).slice(1, -1); // as written inside JSON
+    for (const f of ["server.js", ".next/required-server-files.json"]) {
+      const p = path.join(web, f);
+      if (fs.existsSync(p)) fs.writeFileSync(p, fs.readFileSync(p, "utf8").split(esc).join("/srv/azyksowda/frontend"));
+    }' "$web")
+  c_yellow "   $(uname -s) gurluşy Linux üçin arassalandy (sharp binary, ýollar)"
 }
 
 # ---------- releases ----------

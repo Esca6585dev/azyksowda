@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# `git push` to main also deploys to the server (deploy/push.sh).
+# Enabled by `bash deploy/push.sh --hook`; skip once with `NO_DEPLOY=1 git push`.
+# A failed deploy never blocks the push itself.
+[[ -n "${NO_DEPLOY:-}" ]] && exit 0
+
+deploy=0
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  [[ "$remote_ref" == refs/heads/main ]] && deploy=1
+done
+[[ $deploy == 1 ]] || exit 0
+
+root="$(git rev-parse --show-toplevel)"
+if ! bash "$root/deploy/push.sh" </dev/null; then
+  printf '\033[33m%s\033[0m\n' "Serwere ýerleşdirmek şowsuz (git push dowam edýär). Gaýtadan: bash deploy/push.sh" >&2
+fi
+exit 0

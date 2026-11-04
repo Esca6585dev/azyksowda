@@ -54,10 +54,21 @@ fi
 
 # ---------------------------------------------------------------------------
 step "1/8 Ulgam paketleri (apt)"
-export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq
-apt-get install -y -qq nginx curl ca-certificates xz-utils tar openssl gettext-base git sqlite3 logrotate cron >/dev/null
-c_green "   ✓ nginx $(nginx -v 2>&1 | sed 's#.*/##'), git, sqlite3, logrotate"
+missing=()
+for c in nginx curl xz tar openssl envsubst sqlite3 logrotate; do
+  command -v "$c" >/dev/null 2>&1 || missing+=("$c")
+done
+[[ -d /etc/cron.daily ]] || missing+=(cron)
+if [[ ${#missing[@]} -eq 0 ]]; then
+  # servers with a filtered uplink may not reach the apt mirrors at all
+  c_green "   gerekli paketler eýýäm bar, apt geçildi"
+else
+  echo "   ýok: ${missing[*]}"
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update -qq
+  apt-get install -y -qq nginx curl ca-certificates xz-utils tar openssl gettext-base git sqlite3 logrotate cron >/dev/null
+fi
+c_green "   ✓ nginx $(nginx -v 2>&1 | sed 's#.*/##'), sqlite3, logrotate"
 
 # ---------------------------------------------------------------------------
 step "2/8 Node.js (resmi arhiw)"

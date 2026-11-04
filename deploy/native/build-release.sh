@@ -18,7 +18,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 command -v go >/dev/null || die "Go gurnalmadyk"
 command -v npm >/dev/null || die "Node.js/npm gurnalmadyk"
 if [[ "$(uname -s)" != Linux ]]; then
-  c_yellow "DUÝDURYŞ: Next.js standalone $(uname -s) ulgamynda gurulýar. Ygtybarly bolmagy üçin Linux/WSL ulanyň."
+  c_yellow "Next.js standalone $(uname -s) ulgamynda gurulýar; Linux üçin arassalanar (portable_web)."
 fi
 
 export GOOS=linux GOARCH="${TARGET_ARCH:-amd64}"
