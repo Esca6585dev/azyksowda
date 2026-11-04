@@ -1,12 +1,15 @@
 package seed
 
 import (
+	"crypto/sha256"
 	"embed"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"azyksowda/internal/config"
@@ -14,6 +17,7 @@ import (
 	"azyksowda/internal/utils"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // data/products.json + data/images/* are produced from real Ashgabat market
@@ -133,10 +137,43 @@ func installImage(cfg *config.Config, file string) string {
 	return "/uploads/seed/" + file
 }
 
+const (
+	keyCatalogVersion = "seed_catalog_version"
+	keyCatalogSynced  = "seed_catalog_synced_at"
+)
+
+// catalogVersion fingerprints the embedded catalog so a database seeded by an
+// older build picks up a newer one exactly once.
+func catalogVersion() string {
+	b, _ := dataFS.ReadFile("data/products.json")
+	h := sha256.New()
+	h.Write(b)
+	fmt.Fprint(h, categories)
+	return hex.EncodeToString(h.Sum(nil))[:12]
+}
+
+func getSetting(db *gorm.DB, key string) string {
+	var s models.Setting
+	db.Limit(1).Find(&s, "key = ?", key)
+	return s.Value
+}
+
+func setSetting(db *gorm.DB, key, value string) {
+	db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&models.Setting{Key: key, Value: value})
+}
+
+// seedCatalog loads the embedded catalog. A fresh database gets it as is. An
+// existing one gets it once per catalog version: categories and products are
+// matched by slug and updated, missing ones are added, and rows changed after
+// the previous sync (admin edits, sales) are left alone. Databases from the
+// first, photo-less demo catalog carry no version; their leftover demo
+// products are removed, or hidden when an order still points at them.
 func seedCatalog(db *gorm.DB, cfg *config.Config) {
+	version := catalogVersion()
 	var count int64
 	db.Model(&models.Category{}).Count(&count)
-	if count > 0 {
+	prev := getSetting(db, keyCatalogVersion)
+	if count > 0 && prev == version {
 		return
 	}
 
@@ -146,20 +183,64 @@ func seedCatalog(db *gorm.DB, cfg *config.Config) {
 		return
 	}
 
+	fresh, legacy := count == 0, count > 0 && prev == ""
+	// rows changed after `since` belong to the admin (or to real sales)
+	var since time.Time
+	var legacyMark models.ActivityLog
+	if legacy {
+		// unversioned builds logged seed.catalog right after inserting products
+		db.Where("action = ?", "seed.catalog").Order("id ASC").Limit(1).Find(&legacyMark)
+		if legacyMark.ID != 0 {
+			since = legacyMark.CreatedAt.Add(time.Minute)
+		}
+	} else if !fresh {
+		since, _ = time.Parse(time.RFC3339, getSetting(db, keyCatalogSynced))
+	}
+	touched := func(t time.Time) bool { return !since.IsZero() && t.After(since) }
+
+	var existingCats []models.Category
+	db.Find(&existingCats)
+	catBySlug := map[string]*models.Category{}
+	for i := range existingCats {
+		catBySlug[existingCats[i].Slug] = &existingCats[i]
+	}
 	catIDs := make([]uint, len(categories))
+	catKeepImage := make([]bool, len(categories))
 	for i, c := range categories {
+		slug := utils.Slugify(c.Name)
+		if old, ok := catBySlug[slug]; ok {
+			catIDs[i] = old.ID
+			catKeepImage[i] = old.Image != "" && !strings.HasPrefix(old.Image, "/uploads/seed/")
+			if !touched(old.UpdatedAt) {
+				db.Model(old).Updates(map[string]any{"name": c.Name, "emoji": c.Emoji, "color": c.Color,
+					"description": c.Description, "sort_order": i + 1, "is_active": true})
+			} else {
+				catKeepImage[i] = true
+			}
+			continue
+		}
 		cat := models.Category{
-			Name: c.Name, Slug: utils.Slugify(c.Name), Emoji: c.Emoji, Color: c.Color,
+			Name: c.Name, Slug: slug, Emoji: c.Emoji, Color: c.Color,
 			Description: c.Description, SortOrder: i + 1, IsActive: true,
 		}
 		db.Create(&cat)
 		catIDs[i] = cat.ID
 	}
 
+	var existing []models.Product
+	if !fresh {
+		db.Find(&existing)
+	}
+	bySlug := map[string]*models.Product{}
+	for i := range existing {
+		bySlug[existing[i].Slug] = &existing[i]
+	}
+	inCatalog := map[uint]bool{}
+
 	usedSlugs := map[string]int{}
 	catImage := make([]string, len(categories))
 	now := time.Now()
-	created, withImage := 0, 0
+	created, updated, skipped, withImage := 0, 0, 0, 0
 	for i, p := range list {
 		if p.Cat < 0 || p.Cat >= len(categories) || p.Price <= 0 {
 			continue
@@ -197,10 +278,28 @@ func seedCatalog(db *gorm.DB, cfg *config.Config) {
 			unit = "sany"
 		}
 		featured := p.Featured || i%9 == 0
+		description := fmt.Sprintf(descTemplates[i%len(descTemplates)], p.Name, categories[p.Cat].Name)
+
+		if old, ok := bySlug[slug]; ok {
+			inCatalog[old.ID] = true
+			if touched(old.UpdatedAt) {
+				skipped++
+				continue
+			}
+			// stock and sold are live counters; keep them
+			db.Model(old).Updates(map[string]any{
+				"name": p.Name, "description": description, "brand": p.Brand, "price": p.Price,
+				"old_price": p.OldPrice, "unit": unit, "weight": p.Weight, "image": img,
+				"emoji": categories[p.Cat].Emoji, "category_id": catIDs[p.Cat],
+				"is_featured": featured, "is_active": true,
+			})
+			updated++
+			continue
+		}
+
 		prod := models.Product{
-			Name: p.Name, Slug: slug,
-			Description: fmt.Sprintf(descTemplates[i%len(descTemplates)], p.Name, categories[p.Cat].Name),
-			Brand:       p.Brand, Price: p.Price, OldPrice: p.OldPrice, Unit: unit, Weight: p.Weight,
+			Name: p.Name, Slug: slug, Description: description,
+			Brand: p.Brand, Price: p.Price, OldPrice: p.OldPrice, Unit: unit, Weight: p.Weight,
 			Stock: stock, Sold: (i*53)%400 + 5, Image: img, Emoji: categories[p.Cat].Emoji,
 			CategoryID: catIDs[p.Cat], IsFeatured: featured, IsActive: true,
 			CreatedAt: createdAt, UpdatedAt: createdAt,
@@ -213,14 +312,53 @@ func seedCatalog(db *gorm.DB, cfg *config.Config) {
 	}
 
 	for i, img := range catImage {
-		if img != "" {
+		if img != "" && !catKeepImage[i] {
 			db.Model(&models.Category{}).Where("id = ?", catIDs[i]).Update("image", img)
 		}
 	}
 
-	db.Create(&models.ActivityLog{Action: "seed.catalog", Entity: "product", Level: "info",
-		Message: fmt.Sprintf("%d kategoriýa we %d haryt döredildi (%d suratly)", len(categories), created, withImage), IP: "127.0.0.1"})
-	log.Printf("[SEED] %d categories, %d products (%d with photos) created", len(categories), created, withImage)
+	removed, hidden := 0, 0
+	if legacyMark.ID != 0 {
+		removed, hidden = retireLegacyProducts(db, existing, inCatalog, since)
+	}
+
+	setSetting(db, keyCatalogVersion, version)
+	setSetting(db, keyCatalogSynced, time.Now().UTC().Format(time.RFC3339))
+
+	if fresh {
+		db.Create(&models.ActivityLog{Action: "seed.catalog", Entity: "product", Level: "info",
+			Message: fmt.Sprintf("%d kategoriýa we %d haryt döredildi (%d suratly)", len(categories), created, withImage), IP: "127.0.0.1"})
+		log.Printf("[SEED] %d categories, %d products (%d with photos) created", len(categories), created, withImage)
+		return
+	}
+	db.Create(&models.ActivityLog{Action: "seed.catalog_sync", Entity: "product", Level: "info",
+		Message: fmt.Sprintf("Katalog täzelendi: %d täze, %d täzelendi, %d üýtgedilen galdy, %d köne aýryldy, %d gizlendi",
+			created, updated, skipped, removed, hidden), IP: "127.0.0.1"})
+	log.Printf("[SEED] catalog %s synced: %d new, %d updated, %d kept (edited), %d old removed, %d hidden",
+		version, created, updated, skipped, removed, hidden)
+}
+
+// retireLegacyProducts drops the demo products of the first catalog that the
+// current one no longer has. Products created or edited after that seed
+// (cutoff) belong to the admin and stay; ones still referenced by an order are
+// only hidden.
+func retireLegacyProducts(db *gorm.DB, existing []models.Product, inCatalog map[uint]bool, cutoff time.Time) (removed, hidden int) {
+	for i := range existing {
+		p := &existing[i]
+		if inCatalog[p.ID] || p.CreatedAt.After(cutoff) || p.UpdatedAt.After(cutoff) {
+			continue
+		}
+		var refs int64
+		db.Model(&models.OrderItem{}).Where("product_id = ?", p.ID).Count(&refs)
+		if refs > 0 {
+			db.Model(p).Update("is_active", false)
+			hidden++
+			continue
+		}
+		db.Delete(p)
+		removed++
+	}
+	return removed, hidden
 }
 
 func seedOrders(db *gorm.DB) {
