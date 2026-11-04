@@ -66,12 +66,20 @@ func main() {
 	app.Use(middleware.Recover())
 	app.Use(middleware.RequestID())
 	app.Use(accessLog)
-	app.Use(cors.New(cors.Config{
+	corsCfg := cors.Config{
 		AllowOrigins: strings.Join(origins, ","),
 		AllowMethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, X-Requested-With",
 		MaxAge:       3600,
-	}))
+	}
+	if !cfg.IsProduction() {
+		// In development the site is often opened via the LAN address that
+		// `next dev` prints (http://172.x.x.x:3000); a fixed list would make the
+		// browser silently drop every API call after the preflight.
+		corsCfg.AllowOrigins = ""
+		corsCfg.AllowOriginsFunc = func(string) bool { return true }
+	}
+	app.Use(cors.New(corsCfg))
 	app.Use(compress.New())
 
 	routes.Setup(app, cfg, handlers.New(cfg, db))

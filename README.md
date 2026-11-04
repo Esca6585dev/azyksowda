@@ -110,7 +110,7 @@ Jogap formaty: `{ "success": true, "data": ..., "meta": {page,limit,total,total_
 `frontend/.env.local`:
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:8080   # brauzer → API
+NEXT_PUBLIC_API_URL=                        # brauzer → API (boş = şol domen, /api we /uploads Next rewrites arkaly backend-e geçýär)
 API_URL=http://localhost:8080               # server komponentler → API
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```

@@ -1,12 +1,16 @@
 import type { Category, Meta, Product, SiteConfig } from "./types";
 
-/** API base for the browser (NEXT_PUBLIC_*) and for server components (API_URL). */
+/**
+ * API base. Server components call the Go API directly (API_URL); the browser
+ * uses NEXT_PUBLIC_API_URL or, when unset, same-origin paths that next.config.ts
+ * rewrites to the API — the way nginx routes /api and /uploads in production.
+ */
 export const API_BASE =
-  (typeof window === "undefined" ? process.env.API_URL : undefined) ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8080";
+  typeof window === "undefined"
+    ? process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
+    : process.env.NEXT_PUBLIC_API_URL || "";
 
-export const PUBLIC_API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+export const PUBLIC_API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 export class ApiError extends Error {
   status: number;

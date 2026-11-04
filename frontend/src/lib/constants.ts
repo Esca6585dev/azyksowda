@@ -3,6 +3,10 @@ import type { OrderStatus } from "./types";
 export const SITE_NAME = "AzykSowda";
 export const SITE_TAGLINE = "Azyk harytlary — amatly bahadan, öýüňize çenli";
 
+/** Public origin for canonical/OG/sitemap URLs; a production build without the env var still points at the real domain. */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === "production" ? "https://azyksowda.com.tm" : "http://localhost:3000");
+
 export const ORDER_STATUS: Record<OrderStatus, { label: string; color: string; dot: string }> = {
   pending: { label: "Garaşylýar", color: "bg-accent-100 text-accent-700 ring-accent-200", dot: "bg-accent-500" },
   confirmed: { label: "Tassyklandy", color: "bg-blue-50 text-blue-700 ring-blue-200", dot: "bg-blue-500" },

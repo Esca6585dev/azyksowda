@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/constants";
 import { fetchCategories, fetchProducts } from "@/lib/api";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const base = SITE_URL;
   const [categories, products] = await Promise.all([fetchCategories(), fetchProducts({ limit: 100, sort: "newest" })]);
   const now = new Date();
   return [
