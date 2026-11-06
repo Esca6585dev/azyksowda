@@ -107,7 +107,11 @@ install -d -m 755 /etc/nginx/snippets /var/www/html
 install -m 644 "$HERE/nginx/snippets/azyksowda-ssl.conf" /etc/nginx/snippets/azyksowda-ssl.conf
 
 CONF_DIR="/etc/nginx/sites-available"; ENABLED="/etc/nginx/sites-enabled"
-if [[ ! -d "$CONF_DIR" ]]; then CONF_DIR="/etc/nginx/conf.d"; ENABLED=""; fi
+# Debian's nginx.conf includes sites-enabled/*; nginx.org builds and some
+# images include only conf.d/*.conf, where a sites-enabled link is never read
+if [[ ! -d "$CONF_DIR" ]] || ! grep -qsE '^[[:space:]]*include[[:space:]]+/etc/nginx/sites-enabled/' /etc/nginx/nginx.conf; then
+  CONF_DIR="/etc/nginx/conf.d"; ENABLED=""
+fi
 export API_UPSTREAM WEB_UPSTREAM
 envsubst '${API_UPSTREAM} ${WEB_UPSTREAM}' < "$HERE/nginx/templates/default.conf.template" > "$CONF_DIR/azyksowda.conf"
 
@@ -146,14 +150,21 @@ for f in /etc/nginx/conf.d/*.conf /etc/nginx/sites-enabled/*; do
   yellow "   (köne konfig öçürildi: $f -> ${parked[-1]#*|})"
 done
 
-if nginx -t; then
-  systemctl reload-or-restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || nginx
-  green "   ✓ nginx täzeden ýüklendi"
-else
+restore_parked() {
   for p in "${parked[@]}"; do mv "${p#*|}" "${p%%|*}"; done
   [[ -n "$ENABLED" ]] && rm -f "$ENABLED/azyksowda.conf"
+}
+if ! nginx -t; then
+  restore_parked
   red "   nginx konfig ýalňyş — ýokardaky habary okaň (öňki konfig yzyna goýuldy)"; exit 1
 fi
+# `nginx -t` also passes when our file is simply not included
+if ! nginx -T 2>/dev/null | grep -qE "server_name[^;]*[[:space:]]$DOMAIN([[:space:];]|$)"; then
+  restore_parked
+  red "   nginx $CONF_DIR/azyksowda.conf faýlyny okamaýar (nginx.conf include) — öňki konfig yzyna goýuldy"; exit 1
+fi
+systemctl reload-or-restart nginx 2>/dev/null || nginx -s reload 2>/dev/null || nginx
+green "   ✓ nginx täzeden ýüklendi"
 
 echo
 green "✅ SSL gurnaldy: https://$DOMAIN  (möhleti: $NOT_AFTER)"

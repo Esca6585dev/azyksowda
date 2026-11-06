@@ -189,6 +189,9 @@ prune_releases
 
 # ---------------------------------------------------------------------------
 ADMIN_LINE=$(grep -E '^ADMIN_(EMAIL|PASSWORD)=' "$ENV_DIR/api.env" | tr '\n' ' ')
+# a release carries its scripts; the folder install.sh ran from may be temporary (push.sh)
+SCRIPTS="$APP_ROOT/current/deploy/native"
+[[ -f "$SCRIPTS/update.sh" ]] || SCRIPTS="$NATIVE_DIR"
 echo
 c_green "✅ AzykSowda gurnaldy: $SITE_URL"
 cat <<EOF
@@ -199,7 +202,7 @@ cat <<EOF
 
   Hyzmatlar:    systemctl status azyksowda-api azyksowda-web nginx
   Loglar:       journalctl -u azyksowda-api -f     |  tail -f $LOG_DIR/access.log
-  Täzelemek:    sudo bash $NATIVE_DIR/update.sh
-  Yza gaýtar:   sudo bash $NATIVE_DIR/rollback.sh
+  Täzelemek:    bash deploy/push.sh (kompýuterden)  |  sudo bash $SCRIPTS/update.sh --release <arhiw>
+  Yza gaýtar:   sudo bash $SCRIPTS/rollback.sh
   Maglumatlar:  $DATA_DIR (baza + suratlar), ätiýaçlyk: $BACKUP_DIR
 EOF

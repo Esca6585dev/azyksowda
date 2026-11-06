@@ -137,7 +137,21 @@ Serwerde Docker ulanylmaýar. Ähli zat ulgamyň asyl paketlerinden gurulýar:
 | Backend | Go binar `api/azyksowda-api` | systemd `azyksowda-api`, 127.0.0.1:8080 |
 | Frontend | Next.js standalone `web/server.js` | systemd `azyksowda-web`, 127.0.0.1:3000 |
 
-### Ilkinji gurnama
+### Kompýuterden ýerleşdirmek — `deploy/push.sh` (esasy ýol)
+
+Serwerden github.com açylmaýar, şonuň üçin `git pull` işlemeýär. Reliz şu kompýuterde gurulýar
+(Go linux binar + Next.js standalone) we SSH bilen iberilýär:
+
+```bash
+bash deploy/push.sh            # gur -> iber -> serwerde update.sh (barlag şowsuz bolsa öňki wersiýa gaýdýar)
+bash deploy/push.sh --hook     # mundan beýläk `git push` (main) serwere hem ýerleşdirýär
+NO_DEPLOY=1 git push           # bir gezek ýerleşdirmezden push
+```
+
+Gerek: `~/.ssh/config` içinde `azyksowda` hosty (açar bilen giriş) we serwerde parolsyz `sudo`.
+Ilkinji gezek serwerde gurnama ýok bolsa, `push.sh` özi `install.sh` işledýär we SSL faýllaryny äkidýär.
+
+### Ilkinji gurnama (serwerde GitHub açylýan bolsa)
 
 ```bash
 # serwerde (root)
