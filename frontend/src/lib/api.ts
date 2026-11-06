@@ -90,11 +90,15 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<A
   return json;
 }
 
-/** Resolve an image path returned by the API into an absolute URL. */
+/**
+ * Resolve an image path returned by the API into an absolute URL. A bare
+ * relative path (e.g. imported from the old shop: "folder/file.jpg") lives
+ * under UPLOAD_DIR, so it maps to /uploads/folder/file.jpg.
+ */
 export function imgUrl(src?: string | null): string | null {
   if (!src) return null;
   if (/^https?:\/\//i.test(src) || src.startsWith("data:")) return src;
-  return `${PUBLIC_API_BASE}${src.startsWith("/") ? "" : "/"}${src}`;
+  return `${PUBLIC_API_BASE}${src.startsWith("/") ? "" : "/uploads/"}${src}`;
 }
 
 // ---------- typed helpers used by server components (never throw) ----------

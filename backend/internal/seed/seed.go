@@ -240,7 +240,7 @@ func seedCatalog(db *gorm.DB, cfg *config.Config) {
 	usedSlugs := map[string]int{}
 	catImage := make([]string, len(categories))
 	now := time.Now()
-	created, updated, skipped, withImage := 0, 0, 0, 0
+	created, updated, skipped, photos, withImage := 0, 0, 0, 0, 0
 	for i, p := range list {
 		if p.Cat < 0 || p.Cat >= len(categories) || p.Price <= 0 {
 			continue
@@ -283,6 +283,11 @@ func seedCatalog(db *gorm.DB, cfg *config.Config) {
 		if old, ok := bySlug[slug]; ok {
 			inCatalog[old.ID] = true
 			if touched(old.UpdatedAt) {
+				// keep the admin's data, only give a missing photo ours
+				if img != "" && !imageExists(cfg, old.Image) {
+					db.Model(old).Update("image", img)
+					photos++
+				}
 				skipped++
 				continue
 			}
@@ -332,10 +337,25 @@ func seedCatalog(db *gorm.DB, cfg *config.Config) {
 		return
 	}
 	db.Create(&models.ActivityLog{Action: "seed.catalog_sync", Entity: "product", Level: "info",
-		Message: fmt.Sprintf("Katalog täzelendi: %d täze, %d täzelendi, %d üýtgedilen galdy, %d köne aýryldy, %d gizlendi",
-			created, updated, skipped, removed, hidden), IP: "127.0.0.1"})
-	log.Printf("[SEED] catalog %s synced: %d new, %d updated, %d kept (edited), %d old removed, %d hidden",
-		version, created, updated, skipped, removed, hidden)
+		Message: fmt.Sprintf("Katalog täzelendi: %d täze, %d täzelendi, %d üýtgedilen galdy (%d-sine surat goşuldy), %d köne aýryldy, %d gizlendi",
+			created, updated, skipped, photos, removed, hidden), IP: "127.0.0.1"})
+	log.Printf("[SEED] catalog %s synced: %d new, %d updated, %d kept (edited, %d got a photo), %d old removed, %d hidden",
+		version, created, updated, skipped, photos, removed, hidden)
+}
+
+// imageExists reports whether a product image can be served: absolute URLs
+// are trusted; local paths ("/uploads/x", or a bare "x" that the frontend
+// maps to /uploads/x) must exist under UPLOAD_DIR.
+func imageExists(cfg *config.Config, s string) bool {
+	switch {
+	case s == "":
+		return false
+	case strings.HasPrefix(s, "http://"), strings.HasPrefix(s, "https://"), strings.HasPrefix(s, "data:"):
+		return true
+	}
+	rel := strings.TrimPrefix(strings.TrimPrefix(s, "/"), "uploads/")
+	_, err := os.Stat(filepath.Join(cfg.UploadDir, filepath.FromSlash(rel)))
+	return err == nil
 }
 
 // retireLegacyProducts drops the demo products of the first catalog that the

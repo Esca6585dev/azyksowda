@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { imgUrl } from "@/lib/api";
 import { cn, tileGradient } from "@/lib/utils";
 
@@ -13,10 +16,11 @@ interface Props {
   pad?: string;
 }
 
-/** Product visual: real packshot on white when present, otherwise a tinted emoji tile. */
+/** Product visual: real packshot on white when present, otherwise (or when it fails to load) a tinted emoji tile. */
 export default function ProductImage({ image, emoji, name, color, className, emojiClassName, priority, pad = "p-[8%]" }: Props) {
+  const [failed, setFailed] = useState<string | null>(null);
   const src = imgUrl(image);
-  if (src) {
+  if (src && failed !== src) {
     return (
       <div className={cn("photo-tile relative overflow-hidden", className)}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -26,6 +30,11 @@ export default function ProductImage({ image, emoji, name, color, className, emo
           loading={priority ? "eager" : "lazy"}
           decoding="async"
           draggable={false}
+          onError={() => setFailed(src)}
+          // an SSR image can fail before hydration attaches onError
+          ref={(el) => {
+            if (el && el.complete && el.naturalWidth === 0) setFailed(src);
+          }}
           className={cn("h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.04]", pad)}
         />
       </div>
